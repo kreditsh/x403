@@ -1,0 +1,80 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://x403.kredit.sh/schemas/decision.json",
+  "title": "x403 Decision",
+  "description": "What the authority signs. No numeric value, no layer detail: a word, reasons, four checks, and what would change it.",
+  "type": "object",
+  "required": ["scheme", "version", "id", "decision", "policy_id", "policy_hash", "authority", "checks", "reasons", "evidence_hashes", "issued_at", "expires_at"],
+  "properties": {
+    "scheme": { "const": "x403" },
+    "version": { "type": "string" },
+    "id": { "type": "string" },
+    "decision": { "$ref": "_defs.json#/$defs/decision_word" },
+    "direction": { "$ref": "_defs.json#/$defs/direction" },
+    "mode": { "$ref": "_defs.json#/$defs/mode" },
+    "policy_id": { "type": "string" },
+    "policy_hash": { "$ref": "_defs.json#/$defs/hash" },
+    "authority": { "$ref": "_defs.json#/$defs/key_ref" },
+    "verified": {
+      "type": "object",
+      "description": "per hop: the basis it was verified on, or asserted / absent",
+      "properties": {
+        "human": { "type": "string" }, "operator": { "type": "string" }, "agent": { "type": "string" },
+        "instance": { "type": "string" }, "session": { "type": "string" }
+      }
+    },
+    "checks": {
+      "type": "array",
+      "minItems": 4, "maxItems": 4,
+      "items": {
+        "type": "object",
+        "required": ["key", "status"],
+        "properties": {
+          "key": { "$ref": "_defs.json#/$defs/check_key" },
+          "status": { "$ref": "_defs.json#/$defs/check_status" },
+          "reasons": { "type": "array", "items": { "$ref": "_defs.json#/$defs/reason_code" } }
+        }
+      }
+    },
+    "reasons": { "type": "array", "items": { "$ref": "_defs.json#/$defs/reason_code" } },
+    "constraints": {
+      "type": "object",
+      "description": "present on allow: the yes is scoped",
+      "properties": {
+        "max_amount": { "$ref": "_defs.json#/$defs/amount" },
+        "currency": { "$ref": "_defs.json#/$defs/currency" },
+        "human_stepup_above": { "$ref": "_defs.json#/$defs/amount" },
+        "executors": { "type": "array", "items": { "type": "string" } },
+        "rails": { "type": "array", "items": { "$ref": "_defs.json#/$defs/rail" } },
+        "expires_at": { "$ref": "_defs.json#/$defs/time" }
+      }
+    },
+    "escalation": {
+      "type": "object",
+      "description": "present on escalate: who resolves it and how",
+      "required": ["kind"],
+      "properties": {
+        "kind": { "$ref": "_defs.json#/$defs/escalation_kind" },
+        "options": { "type": "array", "items": { "type": "string", "enum": ["present_x401", "present_mandate", "present_instance_token", "reduce_amount", "staged_amounts", "operator_confirm", "human_stepup", "wait"] } },
+        "reduce_to": { "$ref": "_defs.json#/$defs/amount" },
+        "url": { "type": "string", "format": "uri" },
+        "retry_after": { "type": "integer", "minimum": 0 },
+        "step_up_ref": { "type": "string" }
+      }
+    },
+    "evidence_hashes": { "type": "array", "items": { "$ref": "_defs.json#/$defs/hash" } },
+    "disclosure": {
+      "type": "object",
+      "properties": {
+        "history": { "type": "string", "enum": ["threshold", "none"] },
+        "claims": { "type": "array", "items": { "type": "object", "minProperties": 1, "maxProperties": 1, "additionalProperties": { "type": "integer" } } }
+      }
+    },
+    "http_status": { "type": "integer", "enum": [200, 400, 401, 403, 404, 409, 428, 429, 451] },
+    "supersedes": { "type": ["string", "null"] },
+    "latency_ms": { "type": "integer" },
+    "issued_at": { "$ref": "_defs.json#/$defs/time" },
+    "expires_at": { "$ref": "_defs.json#/$defs/time" },
+    "decision_sig": { "$ref": "_defs.json#/$defs/jws", "description": "JWS by the authority over the object without this field" }
+  }
+}

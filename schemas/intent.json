@@ -1,0 +1,37 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://x403.kredit.sh/schemas/intent.json",
+  "title": "x403 Intent",
+  "type": "object",
+  "properties": {
+    "mandate": {
+      "type": "object",
+      "required": ["format"],
+      "properties": {
+        "format": { "type": "string", "enum": ["ap2", "verifiable-intent", "x401", "amex-intent", "visa-vic-instruction", "shared-payment-token", "mpp", "kredit"] },
+        "ref": { "$ref": "_defs.json#/$defs/hash" },
+        "scope": {
+          "type": "object",
+          "properties": {
+            "executors": { "type": "array", "items": { "type": "string" } },
+            "categories": { "type": "array", "items": { "type": "string" } },
+            "max_amount": { "$ref": "_defs.json#/$defs/amount" },
+            "window": { "type": "string" },
+            "budget": { "type": "string", "description": "amount/period, e.g. 3000.00/month" }
+          }
+        },
+        "issued_by": { "type": "string", "enum": ["human", "operator"] },
+        "signed": { "type": "boolean" },
+        "expires_at": { "$ref": "_defs.json#/$defs/time" }
+      }
+    },
+    "declared": {
+      "type": "object",
+      "properties": {
+        "goal": { "type": "string", "maxLength": 2000 },
+        "expected_amount_range": { "type": "array", "items": { "$ref": "_defs.json#/$defs/amount" }, "minItems": 2, "maxItems": 2 }
+      }
+    },
+    "task_ref": { "$ref": "_defs.json#/$defs/hash" }
+  }
+}

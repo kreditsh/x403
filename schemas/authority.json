@@ -1,0 +1,25 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://x403.kredit.sh/schemas/authority.json",
+  "title": "x403 Authority document",
+  "description": "Published at /.well-known/x403/authority.json.",
+  "type": "object",
+  "required": ["scheme", "version", "id", "jwks_url", "decide", "algorithms"],
+  "properties": {
+    "scheme": { "const": "x403" },
+    "version": { "type": "string" },
+    "id": { "$ref": "_defs.json#/$defs/did_or_url" },
+    "name": { "type": "string" },
+    "jwks_url": { "type": "string", "format": "uri" },
+    "decide": { "type": "string", "format": "uri" },
+    "receipts": { "type": "string", "format": "uri" },
+    "outcomes": { "type": "string", "format": "uri" },
+    "decisions": { "type": "string", "format": "uri", "description": "template with {id}" },
+    "reason_codes": { "type": "string", "format": "uri" },
+    "revoked": { "type": "string", "format": "uri" },
+    "algorithms": { "type": "array", "items": { "type": "string", "enum": ["ES256", "EdDSA"] } },
+    "evidence_read": { "type": "array", "items": { "type": "string" } },
+    "modes": { "type": "array", "items": { "$ref": "_defs.json#/$defs/mode" } },
+    "mcp": { "type": "string", "format": "uri" }
+  }
+}

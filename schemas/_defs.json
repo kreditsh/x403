@@ -1,0 +1,32 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://x403.kredit.sh/schemas/_defs.json",
+  "title": "x403 shared definitions",
+  "$defs": {
+    "hash": { "type": "string", "pattern": "^sha256:[0-9a-f]{64}$", "description": "sha256 of the RFC 8785 canonical form, hex, prefixed" },
+    "amount": { "type": "string", "pattern": "^-?[0-9]+(\\.[0-9]+)?$", "description": "decimal string, never a float" },
+    "currency": { "type": "string", "pattern": "^[A-Z]{3,5}$" },
+    "time": { "type": "string", "format": "date-time", "description": "RFC 3339" },
+    "jws": { "type": "string", "pattern": "^[A-Za-z0-9_-]+\\.[A-Za-z0-9_-]*\\.[A-Za-z0-9_-]+$", "description": "compact JWS" },
+    "did_or_url": { "type": "string", "minLength": 3 },
+    "key_ref": {
+      "type": "object",
+      "required": ["id"],
+      "properties": {
+        "id": { "$ref": "#/$defs/did_or_url", "description": "did:web or https origin" },
+        "kid": { "type": "string" },
+        "jwks_url": { "type": "string", "format": "uri" }
+      }
+    },
+    "hop_status": { "type": "string", "enum": ["verified", "asserted", "absent"] },
+    "rail": { "type": "string", "enum": ["card", "usdc", "ach", "wire", "skyfire", "kite", "mpp", "x402", "agentic-token", "crypto"] },
+    "direction": { "type": "string", "enum": ["inbound", "outbound"] },
+    "mode": { "type": "string", "enum": ["inline", "preflight", "shadow"] },
+    "decision_word": { "type": "string", "enum": ["allow", "escalate", "deny"] },
+    "escalation_kind": { "type": "string", "enum": ["agent_adjust", "operator_confirm", "human_stepup", "executor_review"] },
+    "check_key": { "type": "string", "enum": ["identity", "mandate", "payee", "behavior"] },
+    "check_status": { "type": "string", "enum": ["pass", "warn", "fail", "skip"] },
+    "reason_code": { "type": "string", "pattern": "^[a-z][a-z0-9_]{2,48}$", "description": "a key of registry/reason-codes.json" },
+    "on_timeout": { "type": "string", "enum": ["deny", "escalate", "allow_flagged"] }
+  }
+}

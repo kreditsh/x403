@@ -1,0 +1,39 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://x403.kredit.sh/schemas/policy.json",
+  "title": "x403 Policy document",
+  "description": "Published at /.well-known/x403/policy/<id>.json. What a requester must bring. No weights.",
+  "type": "object",
+  "required": ["scheme", "version", "policy_id", "policy_hash", "authorities", "required_hops", "budget_ms", "on_timeout"],
+  "properties": {
+    "scheme": { "const": "x403" },
+    "version": { "type": "string" },
+    "policy_id": { "type": "string" },
+    "policy_hash": { "$ref": "_defs.json#/$defs/hash" },
+    "executor": { "$ref": "_defs.json#/$defs/key_ref" },
+    "authorities": { "type": "array", "items": { "$ref": "_defs.json#/$defs/key_ref" } },
+    "required_hops": { "type": "array", "items": { "type": "string", "enum": ["human", "operator", "agent", "instance"] } },
+    "accepted_evidence": { "type": "array", "items": { "type": "string" } },
+    "accepted_mandates": { "type": "array", "items": { "type": "string" } },
+    "step_up": {
+      "type": "object",
+      "properties": {
+        "human_above": { "$ref": "_defs.json#/$defs/amount" },
+        "operator_above": { "$ref": "_defs.json#/$defs/amount" }
+      }
+    },
+    "caps": {
+      "type": "object",
+      "properties": {
+        "max_amount": { "$ref": "_defs.json#/$defs/amount" },
+        "currency": { "$ref": "_defs.json#/$defs/currency" }
+      }
+    },
+    "rails": { "type": "array", "items": { "$ref": "_defs.json#/$defs/rail" } },
+    "ladder": { "type": "string", "enum": ["403-401-402", "401-403-402"], "description": "which comes first: the risk posture or identity" },
+    "budget_ms": { "type": "integer" },
+    "on_timeout": { "$ref": "_defs.json#/$defs/on_timeout" },
+    "modes": { "type": "array", "items": { "$ref": "_defs.json#/$defs/mode" } },
+    "issued_at": { "$ref": "_defs.json#/$defs/time" }
+  }
+}

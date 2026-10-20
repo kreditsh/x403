@@ -1,0 +1,25 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://x403.kredit.sh/schemas/receipt.json",
+  "title": "x403 Receipt",
+  "description": "Decision plus the executor's countersignature: the dispute-file artifact.",
+  "type": "object",
+  "required": ["decision_ref", "decision_hash", "executed", "executor", "executor_sig"],
+  "properties": {
+    "decision_ref": { "type": "string" },
+    "decision_hash": { "$ref": "_defs.json#/$defs/hash" },
+    "executed": { "type": "boolean" },
+    "executed_at": { "$ref": "_defs.json#/$defs/time" },
+    "execution": {
+      "type": "object",
+      "properties": {
+        "rail": { "$ref": "_defs.json#/$defs/rail" },
+        "ref": { "type": "string", "description": "auth code, tx hash, transfer id" },
+        "amount": { "$ref": "_defs.json#/$defs/amount" },
+        "currency": { "$ref": "_defs.json#/$defs/currency" }
+      }
+    },
+    "executor": { "$ref": "_defs.json#/$defs/key_ref" },
+    "executor_sig": { "$ref": "_defs.json#/$defs/jws", "description": "JWS by the executor over the object without this field" }
+  }
+}

@@ -1,0 +1,45 @@
+[build-system]
+requires = ["hatchling>=1.25"]
+build-backend = "hatchling.build"
+
+[project]
+name = "x403"
+version = "0.1.0"
+description = "x403: a signed risk decision before money moves. Objects, canonical JSON, ES256 signing and verifying, the HTTP binding, a client and FastAPI middleware."
+readme = "README.md"
+license = "Apache-2.0"
+requires-python = ">=3.10"
+authors = [{ name = "kredit", email = "hello@kredit.sh" }]
+keywords = ["x403", "x402", "x401", "agentic payments", "risk", "ap2", "mpp", "kredit"]
+classifiers = [
+  "Development Status :: 3 - Alpha",
+  "Intended Audience :: Developers",
+  "License :: OSI Approved :: Apache Software License",
+  "Programming Language :: Python :: 3",
+  "Programming Language :: Python :: 3.10",
+  "Programming Language :: Python :: 3.11",
+  "Programming Language :: Python :: 3.12",
+  "Programming Language :: Python :: 3.13",
+  "Topic :: Security :: Cryptography",
+]
+dependencies = ["cryptography>=42"]
+
+[project.optional-dependencies]
+client = ["httpx>=0.27"]
+fastapi = ["fastapi>=0.110", "httpx>=0.27"]
+dev = ["pytest>=8", "pytest-asyncio>=0.23", "build>=1.2", "twine>=5"]
+
+[project.urls]
+Homepage = "https://kredit.sh/x403"
+Repository = "https://github.com/kreditsh/x403"
+Spec = "https://github.com/kreditsh/x403/blob/main/spec/x403.md"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/x403"]
+
+[tool.hatch.build.targets.sdist]
+include = ["src/x403", "README.md", "tests"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+asyncio_mode = "auto"

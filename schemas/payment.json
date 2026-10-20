@@ -1,0 +1,56 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://x403.kredit.sh/schemas/payment.json",
+  "title": "x403 Payment",
+  "description": "The thing about to happen.",
+  "type": "object",
+  "required": ["type", "amount", "currency", "rail", "executor"],
+  "properties": {
+    "type": { "type": "string", "enum": ["payment", "transfer", "authorization", "order"] },
+    "amount": { "$ref": "_defs.json#/$defs/amount" },
+    "currency": { "$ref": "_defs.json#/$defs/currency" },
+    "rail": { "$ref": "_defs.json#/$defs/rail" },
+    "executor": {
+      "type": "object",
+      "required": ["id"],
+      "properties": {
+        "id": { "type": "string", "description": "domain, did:web or wallet id" },
+        "category": { "type": "string", "description": "MCC or a word" },
+        "jurisdiction": { "type": "string", "pattern": "^[A-Z]{2}$" }
+      }
+    },
+    "counterparty": {
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "kind": { "type": "string", "enum": ["merchant", "wallet", "address", "account", "person"] },
+        "age_days": { "type": "integer", "minimum": 0 },
+        "name": { "type": "string" }
+      }
+    },
+    "items": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "sku": { "type": "string" },
+          "description": { "type": "string" },
+          "class": { "type": "string" },
+          "qty": { "type": "integer", "minimum": 1 },
+          "amount": { "$ref": "_defs.json#/$defs/amount" }
+        }
+      }
+    },
+    "references": {
+      "type": "object",
+      "properties": {
+        "order_id": { "type": "string" },
+        "cart_hash": { "$ref": "_defs.json#/$defs/hash", "description": "AP2 checkout_hash or Verifiable Intent transaction_id" },
+        "po": { "type": "string" },
+        "payment_requirements_hash": { "$ref": "_defs.json#/$defs/hash", "description": "the exact x402 PaymentRequirements or MPP challenge" },
+        "instruction_id": { "type": "string", "description": "Visa VIC instruction" }
+      }
+    },
+    "idempotency_key": { "type": "string", "maxLength": 200 }
+  }
+}

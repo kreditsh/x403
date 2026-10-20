@@ -1,0 +1,18 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://x403.kredit.sh/schemas/outcome.json",
+  "title": "x403 Outcome report",
+  "type": "object",
+  "required": ["decision_ref", "outcome", "at", "reporter"],
+  "properties": {
+    "decision_ref": { "type": "string" },
+    "outcome": { "type": "string", "enum": ["settled", "delivered", "disputed", "chargeback", "refund", "reversal", "fraud_confirmed", "false_positive"] },
+    "at": { "$ref": "_defs.json#/$defs/time" },
+    "amount": { "$ref": "_defs.json#/$defs/amount" },
+    "currency": { "$ref": "_defs.json#/$defs/currency" },
+    "reason_code": { "type": "string", "description": "the rail's own code, e.g. a chargeback reason" },
+    "note": { "type": "string", "maxLength": 2000 },
+    "reporter": { "$ref": "_defs.json#/$defs/key_ref" },
+    "sig": { "$ref": "_defs.json#/$defs/jws" }
+  }
+}

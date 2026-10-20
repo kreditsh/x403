@@ -1,0 +1,65 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://x403.kredit.sh/schemas/actor.json",
+  "title": "x403 Actor presentation",
+  "description": "The chain human -> operator -> agent -> instance, each hop verified (with its basis), asserted, or absent.",
+  "type": "object",
+  "$defs": {
+    "hop": {
+      "type": "object",
+      "required": ["status"],
+      "properties": {
+        "status": { "$ref": "_defs.json#/$defs/hop_status" },
+        "basis": { "type": "string", "description": "x401, kyb, kya, registry, token, passport, kredit" },
+        "id": { "type": "string" },
+        "via": { "type": "string" },
+        "ref": { "$ref": "_defs.json#/$defs/hash" }
+      }
+    }
+  },
+  "properties": {
+    "human": {
+      "allOf": [{ "$ref": "#/$defs/hop" }],
+      "properties": { "assurance": { "type": "string", "enum": ["IAL1", "IAL2", "IAL3"] } }
+    },
+    "operator": { "$ref": "#/$defs/hop" },
+    "agent": {
+      "allOf": [{ "$ref": "#/$defs/hop" }],
+      "properties": {
+        "registry": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["name"],
+            "properties": {
+              "name": { "type": "string", "enum": ["visa-tap", "mastercard-wba", "erc-8004", "kredit-passport", "skyfire-kya", "kite"] },
+              "chain": { "type": "string" },
+              "id": { "type": "string" }
+            }
+          }
+        },
+        "harness": { "type": "string" },
+        "model": { "type": "string" },
+        "attestation": { "type": ["string", "null"] }
+      }
+    },
+    "instance": {
+      "allOf": [{ "$ref": "#/$defs/hop" }],
+      "properties": {
+        "token_ref": { "$ref": "_defs.json#/$defs/hash" },
+        "issued_at": { "$ref": "_defs.json#/$defs/time" },
+        "expires_at": { "$ref": "_defs.json#/$defs/time" },
+        "origin": { "type": "string" }
+      }
+    },
+    "session": {
+      "type": "object",
+      "properties": {
+        "ip": { "type": "string" },
+        "device": { "type": "string" },
+        "ua": { "type": "string" },
+        "provenance": { "type": "string", "enum": ["mcp", "api", "browser", "store", "a2a"] }
+      }
+    }
+  }
+}

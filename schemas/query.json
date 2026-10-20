@@ -1,0 +1,30 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://x403.kredit.sh/schemas/query.json",
+  "title": "x403 Risk Query",
+  "type": "object",
+  "required": ["scheme", "version", "direction", "payment"],
+  "properties": {
+    "scheme": { "const": "x403" },
+    "version": { "type": "string", "pattern": "^0\\.1$" },
+    "policy_id": { "type": "string" },
+    "direction": { "$ref": "_defs.json#/$defs/direction" },
+    "mode": { "$ref": "_defs.json#/$defs/mode", "default": "inline" },
+    "payment": { "$ref": "payment.json" },
+    "actor": { "$ref": "actor.json" },
+    "intent": { "$ref": "intent.json" },
+    "evidence": { "type": "array", "items": { "$ref": "evidence.json" } },
+    "challenge": {
+      "type": "object",
+      "properties": {
+        "nonce": { "type": "string", "minLength": 8, "maxLength": 200 },
+        "expires_at": { "$ref": "_defs.json#/$defs/time" }
+      }
+    },
+    "budget_ms": { "type": "integer", "minimum": 20, "maximum": 10000 },
+    "on_timeout": { "$ref": "_defs.json#/$defs/on_timeout", "default": "deny" },
+    "requester": { "$ref": "_defs.json#/$defs/key_ref" },
+    "requester_sig": { "$ref": "_defs.json#/$defs/jws" },
+    "decision_ref": { "type": "string", "description": "a prior preflight decision id this query re-presents" }
+  }
+}

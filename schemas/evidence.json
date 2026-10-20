@@ -1,0 +1,24 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://x403.kredit.sh/schemas/evidence.json",
+  "title": "x403 Evidence item",
+  "description": "An artifact another protocol made, referenced by hash and optionally carried inline. x403 defines how it is referenced, not how it is made.",
+  "type": "object",
+  "required": ["type", "ref"],
+  "properties": {
+    "type": {
+      "type": "string",
+      "enum": [
+        "x401.result", "x403.receipt", "x403.decision",
+        "ap2.intent_mandate", "ap2.cart_mandate", "ap2.payment_mandate",
+        "verifiable-intent.chain", "amex.proof_of_intent", "visa.vic_instruction", "visa.tap_signature", "mastercard.wba_signature",
+        "skyfire.kya", "skyfire.pay", "kite.passport", "stripe.shared_payment_token", "mpp.challenge", "x402.payment_requirements",
+        "erc-8004.registration", "kredit.passport", "kredit.agent_token", "circle.screening", "vgs.alias", "fraud.vendor", "other"
+      ]
+    },
+    "issuer": { "type": "string" },
+    "ref": { "$ref": "_defs.json#/$defs/hash" },
+    "inline": { "type": "string", "description": "the artifact itself: a JWT, SD-JWT, JWS, or canonical JSON" },
+    "jwks_url": { "type": "string", "format": "uri", "description": "where the issuer's keys are, when not discoverable from issuer" }
+  }
+}
