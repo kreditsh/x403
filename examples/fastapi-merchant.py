@@ -38,7 +38,7 @@ async def payment_of(request: Request) -> dict:
     }
 
 
-gate = X403Gate(authority, payment=payment_of, policy_id="shop-checkout-v1", budget_ms=150, on_timeout="deny")
+gate = X403Gate(authority, payment=payment_of, policy_id="shop-checkout-v1", budget_ms=150, on_timeout="denied")
 
 
 @app.get("/.well-known/x403/jwks.json")

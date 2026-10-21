@@ -61,7 +61,7 @@ def status_for(decision: Decision | dict[str, Any]) -> int:
     reasons = decision.get("reasons") or []
     for code in reasons:
         entry = CODES.get(code)
-        if entry and entry["group"] == "system" and entry["effect"] == "deny" and entry.get("status"):
+        if entry and entry["group"] == "system" and entry["effect"] == "denied" and entry.get("status"):
             return int(entry["status"])
     groups = {CODES[c]["group"] for c in reasons if c in CODES}
     for group, status in _DENY_ORDER:

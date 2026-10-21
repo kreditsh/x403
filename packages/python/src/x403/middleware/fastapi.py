@@ -55,8 +55,8 @@ def attach(response: Response, decision: Decision) -> Response:
 def timeout_decision(query: dict[str, Any]) -> Decision:
     """A decision the executor signs itself when the authority gave none inside the budget."""
     now = datetime.now(timezone.utc)
-    on_timeout = query.get("on_timeout") or "deny"
-    word = "allowed" if on_timeout == "allow_flagged" else "escalated" if on_timeout == "escalate" else "denied"
+    on_timeout = query.get("on_timeout") or "denied"
+    word = "allowed" if on_timeout == "allowed_flagged" else "escalated" if on_timeout == "escalated" else "denied"
     decision: dict[str, Any] = {
         "scheme": "x403",
         "version": "0.1",

@@ -14,7 +14,7 @@ export type EscalationKind = "agent_adjust" | "operator_confirm" | "human_stepup
 export type CheckKey = "identity" | "mandate" | "payee" | "behavior";
 export type CheckStatus = "pass" | "warn" | "fail" | "skip";
 export type HopStatus = "verified" | "asserted" | "absent";
-export type OnTimeout = "deny" | "escalate" | "allow_flagged";
+export type OnTimeout = "denied" | "escalated" | "allowed_flagged";
 export type Rail =
   | "card"
   | "usdc"
@@ -300,7 +300,7 @@ export interface JWKS {
   keys: JWK[];
 }
 
-export type Effect = "deny" | "escalate" | "note";
+export type Effect = "denied" | "escalated" | "note";
 
 export interface ReasonCodeEntry {
   group: string;

@@ -72,8 +72,8 @@ export async function buildQuery<Req>(
 /** A decision the executor signs itself when the authority gave none inside the budget. */
 export function timeoutDecision(query: { policy_id?: string; direction: Direction; on_timeout?: OnTimeout }): Decision {
   const now = new Date();
-  const escalate = query.on_timeout === "escalate";
-  const allow = query.on_timeout === "allow_flagged";
+  const escalate = query.on_timeout === "escalated";
+  const allow = query.on_timeout === "allowed_flagged";
   return {
     scheme: "x403",
     version: "0.1",

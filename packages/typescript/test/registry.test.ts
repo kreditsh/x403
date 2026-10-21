@@ -12,11 +12,11 @@ describe("registry", () => {
   it("every code belongs to a known group and every escalate names a kind", () => {
     for (const [code, entry] of Object.entries(registry.codes)) {
       expect(registry.groups[entry.group], code).toBeDefined();
-      if (entry.effect === "escalate") expect(entry.escalation, code).toBeDefined();
+      if (entry.effect === "escalated") expect(entry.escalation, code).toBeDefined();
     }
     expect(groupOf("sanctions_hit")).toBe("compliance");
     expect(checkOf("sanctions_hit")).toBe("payee");
-    expect(effectOf("amount_over_cap")).toBe("escalate");
+    expect(effectOf("amount_over_cap")).toBe("escalated");
     expect(escalationOf("amount_over_cap")).toBe("agent_adjust");
     expect(groupOf("no_such_code")).toBeUndefined();
   });

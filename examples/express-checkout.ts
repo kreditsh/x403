@@ -17,7 +17,7 @@ const gate = x403({
   client: authority,
   policyId: "shop-checkout-v1",
   budgetMs: 150,
-  onTimeout: "deny",
+  onTimeout: "denied",
   payment: (req) => ({
     type: "payment",
     amount: String(req.body.amount),

@@ -16,11 +16,11 @@ def test_bundled_registry_is_the_repo_registry():
 def test_every_code_has_a_group_and_every_escalate_a_kind():
     for code, entry in REGISTRY["codes"].items():
         assert entry["group"] in REGISTRY["groups"], code
-        if entry["effect"] == "escalate":
+        if entry["effect"] == "escalated":
             assert entry.get("escalation"), code
     assert group_of("sanctions_hit") == "compliance"
     assert check_of("sanctions_hit") == "payee"
-    assert effect_of("amount_over_cap") == "escalate"
+    assert effect_of("amount_over_cap") == "escalated"
     assert escalation_of("amount_over_cap") == "agent_adjust"
     assert group_of("no_such_code") is None
 

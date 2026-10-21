@@ -27,6 +27,6 @@
     "check_key": { "type": "string", "enum": ["identity", "mandate", "payee", "behavior"] },
     "check_status": { "type": "string", "enum": ["pass", "warn", "fail", "skip"] },
     "reason_code": { "type": "string", "pattern": "^[a-z][a-z0-9_]{2,48}$", "description": "a key of registry/reason-codes.json" },
-    "on_timeout": { "type": "string", "enum": ["deny", "escalate", "allow_flagged"] }
+    "on_timeout": { "type": "string", "enum": ["denied", "escalated", "allowed_flagged"] }
   }
 }

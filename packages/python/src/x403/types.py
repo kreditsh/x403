@@ -13,8 +13,8 @@ EscalationKind = Literal["agent_adjust", "operator_confirm", "human_stepup", "ex
 CheckKey = Literal["identity", "mandate", "payee", "behavior"]
 CheckStatus = Literal["pass", "warn", "fail", "skip"]
 HopStatus = Literal["verified", "asserted", "absent"]
-OnTimeout = Literal["deny", "escalate", "allow_flagged"]
-Effect = Literal["deny", "escalate", "note"]
+OnTimeout = Literal["denied", "escalated", "allowed_flagged"]
+Effect = Literal["denied", "escalated", "note"]
 Rail = Literal["card", "usdc", "ach", "wire", "skyfire", "kite", "mpp", "x402", "agentic-token", "crypto"]
 OutcomeWord = Literal[
     "settled", "delivered", "disputed", "chargeback", "refund", "reversal", "fraud_confirmed", "false_positive"

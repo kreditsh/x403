@@ -22,7 +22,7 @@
       }
     },
     "budget_ms": { "type": "integer", "minimum": 20, "maximum": 10000 },
-    "on_timeout": { "$ref": "_defs.json#/$defs/on_timeout", "default": "deny" },
+    "on_timeout": { "$ref": "_defs.json#/$defs/on_timeout", "default": "denied" },
     "requester": { "$ref": "_defs.json#/$defs/key_ref" },
     "requester_sig": { "$ref": "_defs.json#/$defs/jws" },
     "decision_ref": { "type": "string", "description": "a prior preflight decision id this query re-presents" }

@@ -51,7 +51,7 @@ export function statusFor(decision: Pick<Decision, "decision" | "reasons"> & { e
   const reasons = decision.reasons ?? [];
   for (const code of reasons) {
     const entry = registry.codes[code];
-    if (entry?.group === "system" && entry.effect === "deny" && entry.status) return entry.status as HttpStatus;
+    if (entry?.group === "system" && entry.effect === "denied" && entry.status) return entry.status as HttpStatus;
   }
   const groups = new Set(reasons.map((c) => registry.codes[c]?.group).filter(Boolean));
   for (const [group, status] of DENY_ORDER) if (groups.has(group)) return status;
