@@ -26,21 +26,21 @@ def test_every_code_has_a_group_and_every_escalate_a_kind():
 
 
 def deny(*reasons):
-    return status_for({"decision": "deny", "reasons": list(reasons)})
+    return status_for({"decision": "denied", "reasons": list(reasons)})
 
 
 def escalate(kind):
-    return status_for({"decision": "escalate", "reasons": [], "escalation": {"kind": kind}})
+    return status_for({"decision": "escalated", "reasons": [], "escalation": {"kind": kind}})
 
 
 def test_allow_is_200():
-    assert status_for({"decision": "allow", "reasons": ["amount_at_cap"]}) == 200
+    assert status_for({"decision": "allowed", "reasons": ["amount_at_cap"]}) == 200
 
 
 @pytest.mark.parametrize("kind,status", [("agent_adjust", 403), ("operator_confirm", 428), ("human_stepup", 428), ("executor_review", 403)])
 def test_escalate_by_kind(kind, status):
     assert escalate(kind) == status
-    assert status_for({"decision": "escalate", "reasons": []}) == 403
+    assert status_for({"decision": "escalated", "reasons": []}) == 403
 
 
 def test_deny_groups():

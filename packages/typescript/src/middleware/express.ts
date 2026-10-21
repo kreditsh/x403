@@ -1,4 +1,4 @@
-// Express: ask before the handler runs. On allow the decision rides on req.x403 and the
+// Express: ask before the handler runs. On allowed the decision rides on req.x403 and the
 // response carries X403-Decision; on anything else the response is the decision itself,
 // with the status the decision names.
 
@@ -23,7 +23,7 @@ export interface ExpressLikeResponse {
 export type ExpressNext = (err?: unknown) => void;
 
 export type ExpressOptions<Req extends ExpressLikeRequest = ExpressLikeRequest> = GateOptions<Req> & {
-  /** With true, a non-allow does not end the request; the handler reads req.x403 and decides. */
+  /** With true, a non-allowed does not end the request; the handler reads req.x403 and decides. */
   passThrough?: boolean;
 };
 
@@ -49,7 +49,7 @@ export function x403<Req extends ExpressLikeRequest = ExpressLikeRequest>(option
     req.x403 = decision;
     res.set(HEADER_DECISION, encode(decision));
     const shadow = decision.mode === "shadow" || options.mode === "shadow";
-    if (decision.decision === "allow" || shadow || options.passThrough) {
+    if (decision.decision === "allowed" || shadow || options.passThrough) {
       next();
       return;
     }

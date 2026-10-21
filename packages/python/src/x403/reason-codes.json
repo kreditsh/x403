@@ -128,9 +128,9 @@
     "superseded_by_review": { "group": "system", "effect": "note", "says": "a person re-decided this after an escalation" }
   },
   "status": {
-    "allow": 200,
-    "escalate": { "agent_adjust": 403, "operator_confirm": 428, "human_stepup": 428, "executor_review": 403 },
-    "deny": "the status of the first group in this order that has a code on the decision: system (its own status), compliance 451, identity 401, velocity 429, else 403",
+    "allowed": 200,
+    "escalated": { "agent_adjust": 403, "operator_confirm": 428, "human_stepup": 428, "executor_review": 403 },
+    "denied": "the status of the first group in this order that has a code on the decision: system (its own status), compliance 451, identity 401, velocity 429, else 403",
     "non_disclosure": 404
   }
 }

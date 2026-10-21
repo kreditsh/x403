@@ -9,7 +9,7 @@ import { buildQuery, clientOf, postReceipt, timeoutDecision, type GateOptions, t
 export type FetchHandler<Env = unknown> = (request: Request, decision: Decision, env: Env) => Response | Promise<Response>;
 
 export type FetchOptions<Env = unknown> = GateOptions<Request> & {
-  /** With true, a non-allow still reaches the handler, which reads the decision. */
+  /** With true, a non-allowed still reaches the handler, which reads the decision. */
   passThrough?: boolean;
   env?: Env;
 };
@@ -36,7 +36,7 @@ export function withX403<Env = unknown>(handler: FetchHandler<Env>, options: Fet
     }
     await options.onDecision?.(decision, request);
     const shadow = decision.mode === "shadow" || options.mode === "shadow";
-    if (decision.decision === "allow" || shadow || options.passThrough) {
+    if (decision.decision === "allowed" || shadow || options.passThrough) {
       return withDecisionHeader(await handler(request, decision, (env ?? options.env) as Env), decision);
     }
     return new Response(JSON.stringify(decision), {
@@ -53,7 +53,7 @@ export function preflight(options: GateOptions<Request>) {
     const query = await buildQuery(request, request.headers, { ...options, mode: "preflight" });
     const decision = await client.decide(query);
     return new Response(null, {
-      status: decision.decision === "allow" ? 200 : (decision.http_status ?? statusFor(decision)),
+      status: decision.decision === "allowed" ? 200 : (decision.http_status ?? statusFor(decision)),
       headers: { [HEADER_DECISION]: encode(decision) },
     });
   };

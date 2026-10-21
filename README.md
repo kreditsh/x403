@@ -2,7 +2,7 @@
 
 **A risk decision before money moves.**
 
-x401 says who is asking. x402 says how to pay. x403 is the question in between: the party about to move money asks a risk authority, gets back a signed `allow`, `escalate` or `deny` with reasons from a shared registry, and both sides keep a receipt anyone can verify offline. After the money moves, the executor reports what happened.
+x401 says who is asking. x402 says how to pay. x403 is the question in between: the party about to move money asks a risk authority, gets back a signed `allowed`, `escalated` or `denied` with reasons from a shared registry, and both sides keep a receipt anyone can verify offline. After the money moves, the executor reports what happened.
 
 - **Spec:** [`spec/x403.md`](spec/x403.md)
 - **Schemas:** [`schemas/`](schemas/) (JSON Schema 2020-12, one file per object)
@@ -27,7 +27,7 @@ const decision = await x403.decide({
   budget_ms: 150,
 });
 
-if (decision.decision === "allow") charge(decision.constraints);
+if (decision.decision === "allowed") charge(decision.constraints);
 else respond(decision.http_status, { "X403-Decision": X403.encode(decision) });
 ```
 
@@ -45,13 +45,13 @@ Six are normative for clients. The decision carries `http_status`, so no client 
 
 | Decision | Status |
 | --- | --- |
-| allow | 200 |
-| escalate, agent adjusts | 403 |
-| escalate, operator or human steps up | 428 |
-| deny, identity | 401 |
-| deny, compliance | 451 |
-| deny, velocity | 429 |
-| deny, anything else | 403 |
+| allowed | 200 |
+| escalated, agent adjusts | 403 |
+| escalated, operator or human steps up | 428 |
+| denied, identity | 401 |
+| denied, compliance | 451 |
+| denied, velocity | 429 |
+| denied, anything else | 403 |
 
 The full table, with 400, 404 and 409, is in the spec, section 6.3.
 

@@ -15,7 +15,7 @@ def sample_decision():
             "scheme": "x403",
             "version": "0.1",
             "id": "k_test",
-            "decision": "allow",
+            "decision": "allowed",
             "direction": "inbound",
             "mode": "inline",
             "policy_id": "shop-checkout-v1",

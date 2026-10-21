@@ -8,7 +8,7 @@ from typing import Literal, TypedDict
 
 Direction = Literal["inbound", "outbound"]
 Mode = Literal["inline", "preflight", "shadow"]
-DecisionWord = Literal["allow", "escalate", "deny"]
+DecisionWord = Literal["allowed", "escalated", "denied"]
 EscalationKind = Literal["agent_adjust", "operator_confirm", "human_stepup", "executor_review"]
 CheckKey = Literal["identity", "mandate", "payee", "behavior"]
 CheckStatus = Literal["pass", "warn", "fail", "skip"]

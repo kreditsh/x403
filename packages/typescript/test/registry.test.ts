@@ -23,38 +23,38 @@ describe("registry", () => {
 });
 
 describe("section 6.3", () => {
-  const deny = (reasons: string[]) => statusFor({ decision: "deny", reasons });
+  const deny = (reasons: string[]) => statusFor({ decision: "denied", reasons });
   const escalate = (kind: "agent_adjust" | "operator_confirm" | "human_stepup" | "executor_review") =>
-    statusFor({ decision: "escalate", reasons: [], escalation: { kind } });
+    statusFor({ decision: "escalated", reasons: [], escalation: { kind } });
 
-  it("allow is 200 with or without constraints", () => {
-    expect(statusFor({ decision: "allow", reasons: ["amount_at_cap"] })).toBe(200);
+  it("allowed is 200 with or without constraints", () => {
+    expect(statusFor({ decision: "allowed", reasons: ["amount_at_cap"] })).toBe(200);
   });
 
-  it("escalate is by kind", () => {
+  it("escalated is by kind", () => {
     expect(escalate("agent_adjust")).toBe(403);
     expect(escalate("operator_confirm")).toBe(428);
     expect(escalate("human_stepup")).toBe(428);
     expect(escalate("executor_review")).toBe(403);
-    expect(statusFor({ decision: "escalate", reasons: [] })).toBe(403);
+    expect(statusFor({ decision: "escalated", reasons: [] })).toBe(403);
   });
 
-  it("deny, identity group is 401", () => {
+  it("denied, identity group is 401", () => {
     expect(deny(["instance_token_expired"])).toBe(401);
     expect(deny(["human_unverified", "amount_over_cap"])).toBe(401);
   });
 
-  it("deny, compliance group is 451, ahead of identity", () => {
+  it("denied, compliance group is 451, ahead of identity", () => {
     expect(deny(["sanctions_hit"])).toBe(451);
     expect(deny(["agent_frozen", "jurisdiction_blocked"])).toBe(451);
   });
 
-  it("deny, velocity group is 429", () => {
+  it("denied, velocity group is 429", () => {
     expect(deny(["velocity_high"])).toBe(429);
     expect(deny(["rate_cap_exceeded", "blocked_counterparty"])).toBe(429);
   });
 
-  it("deny, any other group is 403", () => {
+  it("denied, any other group is 403", () => {
     expect(deny(["blocked_counterparty"])).toBe(403);
     expect(deny(["injection_pattern"])).toBe(403);
     expect(deny(["dispute_history"])).toBe(403);

@@ -46,14 +46,14 @@ def test_allow_passes_with_header(sample_decision, payment):
 
 
 def test_non_allow_is_the_decision_with_its_status(sample_decision, payment):
-    client, _ = authority(sample_decision(decision="deny", reasons=["sanctions_hit"], http_status=451))
+    client, _ = authority(sample_decision(decision="denied", reasons=["sanctions_hit"], http_status=451))
     res = app_with(client, payment).post("/checkout")
     assert res.status_code == 451 and res.json()["reasons"] == ["sanctions_hit"]
     assert HEADER_DECISION in res.headers
 
 
 def test_status_computed_when_missing(sample_decision, payment):
-    d = sample_decision(decision="escalate", reasons=["above_review_threshold"], escalation={"kind": "human_stepup"})
+    d = sample_decision(decision="escalated", reasons=["above_review_threshold"], escalation={"kind": "human_stepup"})
     d.pop("http_status")
     client, _ = authority(d)
     assert app_with(client, payment).post("/checkout").status_code == 428
@@ -68,10 +68,10 @@ def test_fails_closed_when_unreachable(sample_decision, payment):
 
 
 def test_shadow_mode_always_passes(sample_decision, payment):
-    client, _ = authority(sample_decision(decision="deny", reasons=["blocked_counterparty"], http_status=403))
+    client, _ = authority(sample_decision(decision="denied", reasons=["blocked_counterparty"], http_status=403))
     assert app_with(client, payment, mode="shadow").post("/checkout").status_code == 200
 
 
 def test_decision_response(sample_decision):
-    res = decision_response(sample_decision(decision="deny", reasons=["velocity_high"], http_status=429))
+    res = decision_response(sample_decision(decision="denied", reasons=["velocity_high"], http_status=429))
     assert res.status_code == 429 and res.headers[HEADER_DECISION]

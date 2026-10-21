@@ -1,5 +1,7 @@
 # x403
 
+**0.1.1:** the decision word is a state, `allowed`, `escalated` or `denied` (0.1.0 used `allow`, `escalate`, `deny`). Reason-code effects are unchanged.
+
 The x403 protocol for Python: the objects, RFC 8785 canonical JSON, ES256 signing and verifying, the HTTP binding, a sync and an async client for any authority, and a FastAPI gate. One dependency, `cryptography`. Python 3.10+.
 
 ```
@@ -24,7 +26,7 @@ decision = x403.decide(
     budget_ms=150,
 )
 
-if decision["decision"] == "allow":
+if decision["decision"] == "allowed":
     ...  # within decision["constraints"]
 else:
     ...  # decision["http_status"], decision["reasons"], decision.get("escalation")
@@ -70,7 +72,7 @@ async def checkout(decision: dict = Depends(gate)):
     return {"ok": True}
 ```
 
-On allow the route receives the decision. On anything else the gate answers with the decision's `http_status`, the decision as the body and `X403-Decision` on the response. If the authority cannot be reached it fails closed with an executor-signed `authority_timeout` decision.
+On allowed the route receives the decision. On anything else the gate answers with the decision's `http_status`, the decision as the body and `X403-Decision` on the response. If the authority cannot be reached it fails closed with an executor-signed `authority_timeout` decision.
 
 ## Sign your side
 

@@ -1,18 +1,32 @@
 {
   "name": "@kredit/x403",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "x403: a signed risk decision before money moves. Objects, canonical JSON, ES256 signing and verifying, the HTTP binding, a client and middleware.",
   "license": "Apache-2.0",
   "type": "module",
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
   "exports": {
-    ".": { "types": "./dist/index.d.ts", "import": "./dist/index.js" },
-    "./express": { "types": "./dist/middleware/express.d.ts", "import": "./dist/middleware/express.js" },
-    "./fetch": { "types": "./dist/middleware/fetch.d.ts", "import": "./dist/middleware/fetch.js" }
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    },
+    "./express": {
+      "types": "./dist/middleware/express.d.ts",
+      "import": "./dist/middleware/express.js"
+    },
+    "./fetch": {
+      "types": "./dist/middleware/fetch.d.ts",
+      "import": "./dist/middleware/fetch.js"
+    }
   },
-  "files": ["dist", "README.md"],
-  "engines": { "node": ">=20" },
+  "files": [
+    "dist",
+    "README.md"
+  ],
+  "engines": {
+    "node": ">=20"
+  },
   "scripts": {
     "sync": "node scripts/sync-registry.mjs",
     "prebuild": "npm run sync",
@@ -21,9 +35,22 @@
     "test": "vitest run",
     "prepublishOnly": "npm run build && npm test"
   },
-  "repository": { "type": "git", "url": "https://github.com/kreditsh/x403", "directory": "packages/typescript" },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/kreditsh/x403.git",
+    "directory": "packages/typescript"
+  },
   "homepage": "https://kredit.sh/x403",
-  "keywords": ["x403", "x402", "x401", "agentic payments", "risk", "ap2", "mpp", "kredit"],
+  "keywords": [
+    "x403",
+    "x402",
+    "x401",
+    "agentic payments",
+    "risk",
+    "ap2",
+    "mpp",
+    "kredit"
+  ],
   "devDependencies": {
     "@types/node": "^22.10.0",
     "typescript": "^5.7.2",

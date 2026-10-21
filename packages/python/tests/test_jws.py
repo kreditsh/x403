@@ -39,7 +39,7 @@ def test_verify_decision_tampered_and_expired(sample_decision):
     decision = {**body, "decision_sig": sign(body, key.private_jwk, typ="x403-decision+jws")}
     assert verify_decision(decision, jwks).ok
 
-    tampered = verify_decision({**decision, "decision": "deny"}, jwks)
+    tampered = verify_decision({**decision, "decision": "denied"}, jwks)
     assert not tampered.ok and "differs" in tampered.reason
 
     stale = verify_decision(decision, jwks, now=datetime.now(timezone.utc) + timedelta(hours=1))

@@ -78,7 +78,7 @@ export function timeoutDecision(query: { policy_id?: string; direction: Directio
     scheme: "x403",
     version: "0.1",
     id: `timeout_${now.getTime().toString(36)}`,
-    decision: allow ? "allow" : escalate ? "escalate" : "deny",
+    decision: allow ? "allowed" : escalate ? "escalated" : "denied",
     direction: query.direction,
     policy_id: query.policy_id ?? "unknown",
     policy_hash: "sha256:0000000000000000000000000000000000000000000000000000000000000000",

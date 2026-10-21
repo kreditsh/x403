@@ -39,7 +39,7 @@
     "reasons": { "type": "array", "items": { "$ref": "_defs.json#/$defs/reason_code" } },
     "constraints": {
       "type": "object",
-      "description": "present on allow: the yes is scoped",
+      "description": "present on allowed: the yes is scoped",
       "properties": {
         "max_amount": { "$ref": "_defs.json#/$defs/amount" },
         "currency": { "$ref": "_defs.json#/$defs/currency" },
@@ -51,7 +51,7 @@
     },
     "escalation": {
       "type": "object",
-      "description": "present on escalate: who resolves it and how",
+      "description": "present on escalated: who resolves it and how",
       "required": ["kind"],
       "properties": {
         "kind": { "$ref": "_defs.json#/$defs/escalation_kind" },

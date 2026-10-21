@@ -9,7 +9,7 @@ export type JWS = string;
 
 export type Direction = "inbound" | "outbound";
 export type Mode = "inline" | "preflight" | "shadow";
-export type DecisionWord = "allow" | "escalate" | "deny";
+export type DecisionWord = "allowed" | "escalated" | "denied";
 export type EscalationKind = "agent_adjust" | "operator_confirm" | "human_stepup" | "executor_review";
 export type CheckKey = "identity" | "mandate" | "payee" | "behavior";
 export type CheckStatus = "pass" | "warn" | "fail" | "skip";
@@ -318,9 +318,9 @@ export interface Registry {
   effects: Record<Effect, string>;
   codes: Record<string, ReasonCodeEntry>;
   status: {
-    allow: number;
-    escalate: Record<EscalationKind, number>;
-    deny: string;
+    allowed: number;
+    escalated: Record<EscalationKind, number>;
+    denied: string;
     non_disclosure: number;
   };
 }

@@ -40,12 +40,12 @@ export async function payWithPreflight(input: {
   const verified = await authority.verify(decision);
   if (!verified.ok) throw new Error(`decision did not verify: ${verified.reason}`);
 
-  if (decision.decision === "escalate" && decision.escalation?.kind === "agent_adjust" && decision.escalation.reduce_to) {
+  if (decision.decision === "escalated" && decision.escalation?.kind === "agent_adjust" && decision.escalation.reduce_to) {
     // No human is needed: shrink to what the authority said and ask again, citing the first id.
     return payWithPreflight({ ...input, amount: decision.escalation.reduce_to });
   }
-  if (decision.decision !== "allow") {
-    // Carry the signed non-allow to the operator unchanged; it is their record, not ours.
+  if (decision.decision !== "allowed") {
+    // Carry the signed non-allowed to the operator unchanged; it is their record, not ours.
     return { paid: false, decision };
   }
 

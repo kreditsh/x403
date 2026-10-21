@@ -19,7 +19,7 @@ GROUPS: dict[str, dict[str, Any]] = REGISTRY["groups"]
 # The six statuses a client must handle; anything else may be treated as 403.
 NORMATIVE_STATUSES = (200, 401, 403, 428, 429, 451)
 
-# The deny groups in the order section 6.3 consults them, after system codes.
+# The denied groups in the order section 6.3 consults them, after system codes.
 _DENY_ORDER = (("compliance", 451), ("identity", 401), ("velocity", 429))
 
 
@@ -48,16 +48,16 @@ def escalation_of(code: str) -> str | None:
 
 
 def status_for(decision: Decision | dict[str, Any]) -> int:
-    """Section 6.3. allow is 200. escalate is by kind. deny is the status of the first
+    """Section 6.3. allowed is 200. escalated is by kind. denied is the status of the first
     group, in order, that has a code on the decision: a system code with its own status
     and a deny effect (a note such as shadow_mode never turns a deny into a 200), then
     compliance, identity, velocity, else 403."""
     word = decision.get("decision")
-    if word == "allow":
+    if word == "allowed":
         return 200
-    if word == "escalate":
+    if word == "escalated":
         kind = (decision.get("escalation") or {}).get("kind")
-        return int(REGISTRY["status"]["escalate"].get(kind, 403)) if kind else 403
+        return int(REGISTRY["status"]["escalated"].get(kind, 403)) if kind else 403
     reasons = decision.get("reasons") or []
     for code in reasons:
         entry = CODES.get(code)

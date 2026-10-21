@@ -8,7 +8,7 @@ export function sampleDecision(overrides: Partial<Decision> = {}): Decision {
     scheme: "x403",
     version: "0.1",
     id: "k_test",
-    decision: "allow",
+    decision: "allowed",
     direction: "inbound",
     mode: "inline",
     policy_id: "shop-checkout-v1",
@@ -56,7 +56,7 @@ describe("ES256 JWS", () => {
     const decision: Decision = { ...body, decision_sig: await sign(body, key.privateJwk, { typ: "x403-decision+jws" }) };
     expect((await verifyDecision(decision, jwks)).ok).toBe(true);
 
-    const tampered: Decision = { ...decision, decision: "deny" };
+    const tampered: Decision = { ...decision, decision: "denied" };
     const t = await verifyDecision(tampered, jwks);
     expect(t.ok).toBe(false);
     expect(t.reason).toMatch(/differs/);

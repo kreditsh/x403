@@ -42,7 +42,7 @@ function fakeExpress(headers: Record<string, string> = {}) {
 }
 
 describe("express middleware", () => {
-  it("lets an allow through with the decision on req and the header on res", async () => {
+  it("lets an allowed through with the decision on req and the header on res", async () => {
     const { client, sent } = authority(sampleDecision());
     const presentation = encode({ actor: { agent: { status: "asserted", id: "did:key:z6Mk" } }, evidence: [{ type: "kredit.passport", ref: "sha256:" + "11".repeat(32) }] });
     const { req, res, next } = fakeExpress({ [HEADER_PRESENTATION.toLowerCase()]: presentation });
@@ -59,8 +59,8 @@ describe("express middleware", () => {
     });
   });
 
-  it("answers a non-allow with the decision's status and body", async () => {
-    const denied = sampleDecision({ decision: "deny", reasons: ["sanctions_hit"], http_status: 451, constraints: undefined });
+  it("answers a non-allowed with the decision's status and body", async () => {
+    const denied = sampleDecision({ decision: "denied", reasons: ["sanctions_hit"], http_status: 451, constraints: undefined });
     const { client } = authority(denied);
     const { req, res, next } = fakeExpress();
     await x403({ client, payment: () => payment })(req, res, next);
@@ -70,7 +70,7 @@ describe("express middleware", () => {
   });
 
   it("computes the status when the authority left it out", async () => {
-    const escalate = sampleDecision({ decision: "escalate", reasons: ["above_review_threshold"], escalation: { kind: "human_stepup" }, http_status: undefined, constraints: undefined });
+    const escalate = sampleDecision({ decision: "escalated", reasons: ["above_review_threshold"], escalation: { kind: "human_stepup" }, http_status: undefined, constraints: undefined });
     const { client } = authority(escalate);
     const { req, res, next } = fakeExpress();
     await x403({ client, payment: () => payment })(req, res, next);
@@ -88,7 +88,7 @@ describe("express middleware", () => {
   });
 
   it("in shadow mode logs and always passes", async () => {
-    const denied = sampleDecision({ decision: "deny", reasons: ["blocked_counterparty"], http_status: 403 });
+    const denied = sampleDecision({ decision: "denied", reasons: ["blocked_counterparty"], http_status: 403 });
     const { client } = authority(denied);
     const { req, res, next } = fakeExpress();
     await x403({ client, payment: () => payment, mode: "shadow" })(req, res, next);
@@ -103,11 +103,11 @@ describe("fetch middleware", () => {
     const res = await handler(new Request("https://shop.example/checkout", { method: "POST" }));
     expect(res.status).toBe(200);
     expect(await res.text()).toBe("ok k_test");
-    expect(decode<Decision>(res.headers.get(HEADER_DECISION)!).decision).toBe("allow");
+    expect(decode<Decision>(res.headers.get(HEADER_DECISION)!).decision).toBe("allowed");
   });
 
   it("refuses with the decision as the body", async () => {
-    const { client } = authority(sampleDecision({ decision: "deny", reasons: ["velocity_high"], http_status: 429 }));
+    const { client } = authority(sampleDecision({ decision: "denied", reasons: ["velocity_high"], http_status: 429 }));
     const handler = withX403(async () => new Response("never"), { client, payment: () => payment });
     const res = await handler(new Request("https://shop.example/checkout"));
     expect(res.status).toBe(429);

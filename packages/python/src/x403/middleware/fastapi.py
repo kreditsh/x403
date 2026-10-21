@@ -1,5 +1,5 @@
 """FastAPI: ask before the route runs. `X403Gate` is a dependency that returns the
-decision on allow and raises the decision as the response on anything else, with the
+decision on allowed and raises the decision as the response on anything else, with the
 status the decision names and X403-Decision on it. `decision_response` is the same
 mapping for anyone building a response by hand."""
 
@@ -56,7 +56,7 @@ def timeout_decision(query: dict[str, Any]) -> Decision:
     """A decision the executor signs itself when the authority gave none inside the budget."""
     now = datetime.now(timezone.utc)
     on_timeout = query.get("on_timeout") or "deny"
-    word = "allow" if on_timeout == "allow_flagged" else "escalate" if on_timeout == "escalate" else "deny"
+    word = "allowed" if on_timeout == "allow_flagged" else "escalated" if on_timeout == "escalate" else "denied"
     decision: dict[str, Any] = {
         "scheme": "x403",
         "version": "0.1",
@@ -69,17 +69,17 @@ def timeout_decision(query: dict[str, Any]) -> Decision:
         "checks": [{"key": k, "status": "skip"} for k in ("identity", "mandate", "payee", "behavior")],
         "reasons": ["authority_timeout"],
         "evidence_hashes": [],
-        "http_status": 200 if word == "allow" else 403,
+        "http_status": 200 if word == "allowed" else 403,
         "issued_at": now.isoformat().replace("+00:00", "Z"),
         "expires_at": (now + timedelta(seconds=60)).isoformat().replace("+00:00", "Z"),
     }
-    if word == "escalate":
+    if word == "escalated":
         decision["escalation"] = {"kind": "executor_review", "options": ["wait"], "retry_after": 60}
     return decision  # type: ignore[return-value]
 
 
 class X403Decided(HTTPException):
-    """Raised by the gate on a non-allow; the handler below turns it into the decision response."""
+    """Raised by the gate on a non-allowed; the handler below turns it into the decision response."""
 
     def __init__(self, decision: Decision):
         self.decision = decision
@@ -149,16 +149,16 @@ class X403Gate:
             if hasattr(out, "__await__"):
                 await out
         request.state.x403 = decision
-        # Headers set on the injected response reach the route's own response on allow.
+        # Headers set on the injected response reach the route's own response on allowed.
         response.headers[HEADER_DECISION] = encode(decision)
         shadow = decision.get("mode") == "shadow" or self.mode == "shadow"
-        if decision.get("decision") == "allow" or shadow or self.pass_through:
+        if decision.get("decision") == "allowed" or shadow or self.pass_through:
             return decision
         raise X403Decided(decision)
 
 
 def install(app: Any) -> None:
-    """Register the handler that answers a gate's non-allow with the decision itself."""
+    """Register the handler that answers a gate's non-allowed with the decision itself."""
 
     @app.exception_handler(X403Decided)
     async def _handle(_request: Request, exc: X403Decided) -> Response:

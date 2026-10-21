@@ -1,5 +1,7 @@
 # @kredit/x403
 
+**0.1.1:** the decision word is a state, `allowed`, `escalated` or `denied` (0.1.0 used `allow`, `escalate`, `deny`). Reason-code effects are unchanged.
+
 The x403 protocol for TypeScript and JavaScript: the objects, RFC 8785 canonical JSON, ES256 signing and verifying on WebCrypto, the HTTP binding, a client for any authority, and middleware for Express and fetch-style handlers. No runtime dependencies. Runs on Node 20+, Cloudflare Workers and browsers.
 
 ```
@@ -22,7 +24,7 @@ const decision = await x403.decide({
   budget_ms: 150,
 });
 
-if (decision.decision === "allow") {
+if (decision.decision === "allowed") {
   // within decision.constraints
 } else {
   // decision.http_status, decision.reasons, decision.escalation
@@ -64,7 +66,7 @@ app.post("/checkout", gate, async (req, res) => {
 const postReceipt = receipt({ client: { authority: "https://api.kredit.sh", apiKey: process.env.KREDIT_API_KEY } });
 ```
 
-On allow the decision rides on `req.x403` and the response carries `X403-Decision`. On anything else the middleware answers with the decision's `http_status` and the decision as the body. If the authority cannot be reached it fails closed with an executor-signed `authority_timeout` decision.
+On allowed the decision rides on `req.x403` and the response carries `X403-Decision`. On anything else the middleware answers with the decision's `http_status` and the decision as the body. If the authority cannot be reached it fails closed with an executor-signed `authority_timeout` decision.
 
 ## Workers, Hono, Next
 
