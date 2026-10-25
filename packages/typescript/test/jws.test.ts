@@ -6,7 +6,7 @@ export function sampleDecision(overrides: Partial<Decision> = {}): Decision {
   const now = Date.now();
   return {
     scheme: "x403",
-    version: "0.2",
+    version: "0.1",
     id: "k_test",
     decision: "allowed",
     direction: "inbound",
@@ -82,7 +82,7 @@ describe("ES256 JWS", () => {
     expect(o.header.typ).toBe("x403-outcome+jws");
 
     const query = await signQuery(
-      { scheme: "x403", version: "0.2", direction: "inbound", payment: { type: "payment", amount: "1.00", currency: "USD", rail: "card", executor: { id: "shop.example" } }, requester: { id: "did:web:shop.example" } },
+      { scheme: "x403", version: "0.1", direction: "inbound", payment: { type: "payment", amount: "1.00", currency: "USD", rail: "card", executor: { id: "shop.example" } }, requester: { id: "did:web:shop.example" } },
       key.privateJwk,
     );
     expect((await verify(query.requester_sig!, key.publicJwk)).payload).toMatchObject({ direction: "inbound" });

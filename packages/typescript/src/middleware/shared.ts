@@ -76,7 +76,7 @@ export function timeoutDecision(query: { policy_id?: string; direction: Directio
   const allow = query.on_timeout === "allowed_flagged";
   return {
     scheme: "x403",
-    version: "0.2",
+    version: "0.1",
     id: `timeout_${now.getTime().toString(36)}`,
     decision: allow ? "allowed" : escalate ? "escalated" : "denied",
     direction: query.direction,

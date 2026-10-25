@@ -5,7 +5,7 @@ import { decode, encode } from "./headers.js";
 import { verifyDecision, type VerifyResult } from "./jws.js";
 import type { Authority, Decision, JWKS, Outcome, QueryInput, Receipt, RiskQuery } from "./types.js";
 
-export const VERSION = "0.2";
+export const VERSION = "0.1";
 
 export class X403Error extends Error {
   readonly status: number;

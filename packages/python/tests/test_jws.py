@@ -62,7 +62,7 @@ def test_countersigns_receipts_outcomes_queries(sample_decision):
     assert verify(outcome["sig"], key.public_jwk).header["typ"] == "x403-outcome+jws"
 
     query = sign_query(
-        {"scheme": "x403", "version": "0.2", "direction": "inbound", "payment": {"type": "payment", "amount": "1.00", "currency": "USD", "rail": "card", "executor": {"id": "x"}}, "requester": {"id": "did:web:shop.example"}},
+        {"scheme": "x403", "version": "0.1", "direction": "inbound", "payment": {"type": "payment", "amount": "1.00", "currency": "USD", "rail": "card", "executor": {"id": "x"}}, "requester": {"id": "did:web:shop.example"}},
         key.private_jwk,
     )
     assert verify(query["requester_sig"], key.public_jwk).payload["direction"] == "inbound"

@@ -6,7 +6,7 @@
   "required": ["scheme", "version", "direction", "payment"],
   "properties": {
     "scheme": { "const": "x403" },
-    "version": { "type": "string", "pattern": "^0\\.[12]$" },
+    "version": { "type": "string", "pattern": "^0\\.1$" },
     "policy_id": { "type": "string" },
     "direction": { "$ref": "_defs.json#/$defs/direction" },
     "mode": { "$ref": "_defs.json#/$defs/mode", "default": "inline" },

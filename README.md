@@ -67,14 +67,16 @@ examples/    an Express checkout, a Cloudflare Worker, a FastAPI merchant, a wal
 
 ## Versions
 
-The protocol version is the `version` field of every object. Each protocol version is a git tag and a GitHub release here, and the SDKs that speak it carry the same major.minor.
+Two numbers, on purpose. The **protocol version** is the `version` field of every object; it changes only when an object changes. The **package version** is the release number of `@kredit/x403` on npm and `x403` on PyPI; it changes whenever the packages change. Every package release is a git tag here.
 
-| Protocol | What changed | Git | npm `@kredit/x403` | PyPI `x403` |
-| --- | --- | --- | --- | --- |
-| 0.2 | Decisions are states: `allowed`, `escalated`, `denied`. Registry effects and `on_timeout` use the same words. | `v0.2.1` | 0.2.1 | 0.2.1 |
-| 0.1 | First draft: verbs `allow`, `escalate`, `deny`. | first commit | 0.1.2 | 0.1.1 |
+| Package release | Git tag | Protocol it speaks | What changed in the packages |
+| --- | --- | --- | --- |
+| 0.2.2 | `v0.2.2` | 0.1 | Decisions are states: `allowed`, `escalated`, `denied`; registry effects and `on_timeout` use the same words. Changelog and this table. |
+| 0.2.1 (PyPI only) | | 0.1 | Same as 0.2.2 but wrote `0.2` in the `version` field by mistake; use 0.2.2. |
+| 0.2.0 | | 0.1 | The state words, first release. |
+| 0.1.2 npm, 0.1.1 PyPI | | 0.1 | First draft: verbs `allow`, `escalate`, `deny`. |
 
-`0.2.0` of both packages already spoke the 0.2 words but still wrote `0.1` in the `version` field; `0.2.1` corrects the field. Authorities accept queries at `0.1` and `0.2`. See [CHANGELOG.md](CHANGELOG.md).
+See [CHANGELOG.md](CHANGELOG.md).
 
 ## Contributing
 

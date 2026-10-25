@@ -59,7 +59,7 @@ def timeout_decision(query: dict[str, Any]) -> Decision:
     word = "allowed" if on_timeout == "allowed_flagged" else "escalated" if on_timeout == "escalated" else "denied"
     decision: dict[str, Any] = {
         "scheme": "x403",
-        "version": "0.2",
+        "version": "0.1",
         "id": f"timeout_{int(now.timestamp())}",
         "decision": word,
         "direction": query.get("direction"),
