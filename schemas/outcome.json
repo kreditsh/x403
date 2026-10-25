@@ -2,17 +2,22 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://x403.kredit.sh/schemas/outcome.json",
   "title": "x403 Outcome report",
+  "description": "What happened after the money moved. Only the executor named in the receipt, the requester, the authority, or a reporter registered in the executor's policy may report, and the report is signed.",
   "type": "object",
-  "required": ["decision_ref", "outcome", "at", "reporter"],
+  "required": ["decision_ref", "outcome", "at", "reporter", "sig"],
   "properties": {
     "decision_ref": { "type": "string" },
+    "decision_hash": { "$ref": "_defs.json#/$defs/hash", "description": "the decision as signed, so the report cannot be moved to another decision with the same id" },
+    "authority_id": { "$ref": "_defs.json#/$defs/did_or_url" },
     "outcome": { "type": "string", "enum": ["settled", "delivered", "disputed", "chargeback", "refund", "reversal", "fraud_confirmed", "false_positive"] },
+    "category": { "type": "string", "enum": ["attack", "accident", "control_failure", "commercial_dispute", "none"], "description": "what kind of loss, if any" },
+    "reported_via": { "type": "string", "enum": ["executor", "requester", "issuer", "network", "facilitator", "psp", "authority"] },
     "at": { "$ref": "_defs.json#/$defs/time" },
     "amount": { "$ref": "_defs.json#/$defs/amount" },
     "currency": { "$ref": "_defs.json#/$defs/currency" },
     "reason_code": { "type": "string", "description": "the rail's own code, e.g. a chargeback reason" },
     "note": { "type": "string", "maxLength": 2000 },
     "reporter": { "$ref": "_defs.json#/$defs/key_ref" },
-    "sig": { "$ref": "_defs.json#/$defs/jws" }
+    "sig": { "$ref": "_defs.json#/$defs/jws", "description": "JWS by the reporter over the object without this field" }
   }
 }

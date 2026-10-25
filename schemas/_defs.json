@@ -3,7 +3,8 @@
   "$id": "https://x403.kredit.sh/schemas/_defs.json",
   "title": "x403 shared definitions",
   "$defs": {
-    "hash": { "type": "string", "pattern": "^sha256:[0-9a-f]{64}$", "description": "sha256 of the RFC 8785 canonical form, hex, prefixed" },
+    "hash": { "type": "string", "pattern": "^sha256:[0-9a-f]{64}$", "description": "sha256 of the RFC 8785 canonical form, hex, prefixed: a hash x403 made" },
+    "foreign_ref": { "type": "string", "minLength": 1, "maxLength": 512, "description": "a hash or id made by another protocol, carried verbatim in the field named for it" },
     "amount": { "type": "string", "pattern": "^-?[0-9]+(\\.[0-9]+)?$", "description": "decimal string, never a float" },
     "currency": { "type": "string", "pattern": "^[A-Z]{3,5}$" },
     "time": { "type": "string", "format": "date-time", "description": "RFC 3339" },
@@ -18,6 +19,24 @@
         "jwks_url": { "type": "string", "format": "uri" }
       }
     },
+    "subject": {
+      "type": "object",
+      "description": "the one payment a decision is for: a verifier checks it before trusting an allow",
+      "required": ["payment_ref", "amount", "currency", "executor_id"],
+      "properties": {
+        "payment_ref": { "$ref": "#/$defs/hash", "description": "hash of the payment object as presented" },
+        "amount": { "$ref": "#/$defs/amount" },
+        "currency": { "$ref": "#/$defs/currency" },
+        "executor_id": { "$ref": "#/$defs/did_or_url" }
+      }
+    },
+    "binding_hints": {
+      "type": "object",
+      "description": "advisory: how the executor answers on the HTTP binding; not part of the decision's meaning",
+      "properties": {
+        "http_status": { "type": "integer", "enum": [200, 400, 401, 403, 404, 409, 428, 429, 451] }
+      }
+    },
     "hop_status": { "type": "string", "enum": ["verified", "asserted", "absent"] },
     "rail": { "type": "string", "enum": ["card", "usdc", "ach", "wire", "skyfire", "kite", "mpp", "x402", "agentic-token", "crypto"] },
     "direction": { "type": "string", "enum": ["inbound", "outbound"] },
@@ -27,6 +46,6 @@
     "check_key": { "type": "string", "enum": ["identity", "mandate", "payee", "behavior"] },
     "check_status": { "type": "string", "enum": ["pass", "warn", "fail", "skip"] },
     "reason_code": { "type": "string", "pattern": "^[a-z][a-z0-9_]{2,48}$", "description": "a key of registry/reason-codes.json" },
-    "on_timeout": { "type": "string", "enum": ["denied", "escalated", "allowed_flagged"] }
+    "on_timeout": { "type": "string", "enum": ["denied", "escalated"], "description": "never an allow: a slow authority must not be a bypass" }
   }
 }

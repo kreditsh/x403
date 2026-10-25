@@ -1,0 +1,37 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://x403.kredit.sh/schemas/local_decision.json",
+  "title": "x403 Local decision",
+  "description": "What an executor signs itself when the authority gave no decision inside the budget. Never an allow, never presented as the authority's. The authority stores it as a receipt, not as a decision of its own.",
+  "type": "object",
+  "required": ["scheme", "version", "id", "decision", "local", "subject", "audience", "policy_id", "reasons", "executor", "issued_at", "expires_at"],
+  "properties": {
+    "scheme": { "const": "x403" },
+    "version": { "type": "string" },
+    "id": { "type": "string" },
+    "decision": { "type": "string", "enum": ["denied", "escalated"] },
+    "local": { "const": true },
+    "direction": { "$ref": "_defs.json#/$defs/direction" },
+    "subject": { "$ref": "_defs.json#/$defs/subject" },
+    "audience": { "$ref": "_defs.json#/$defs/did_or_url" },
+    "query_ref": { "$ref": "_defs.json#/$defs/hash" },
+    "policy_id": { "type": "string" },
+    "policy_hash": { "$ref": "_defs.json#/$defs/hash" },
+    "authority": { "$ref": "_defs.json#/$defs/key_ref", "description": "the authority that did not answer" },
+    "reasons": { "type": "array", "items": { "$ref": "_defs.json#/$defs/reason_code" }, "contains": { "const": "authority_timeout" } },
+    "escalation": {
+      "type": "object",
+      "required": ["kind"],
+      "properties": {
+        "kind": { "$ref": "_defs.json#/$defs/escalation_kind" },
+        "options": { "type": "array", "items": { "type": "string" } },
+        "retry_after": { "type": "integer", "minimum": 0 }
+      }
+    },
+    "binding_hints": { "$ref": "_defs.json#/$defs/binding_hints" },
+    "executor": { "$ref": "_defs.json#/$defs/key_ref" },
+    "issued_at": { "$ref": "_defs.json#/$defs/time" },
+    "expires_at": { "$ref": "_defs.json#/$defs/time" },
+    "local_sig": { "$ref": "_defs.json#/$defs/jws", "description": "JWS by the executor over the object without this field" }
+  }
+}

@@ -45,10 +45,14 @@
       "type": "object",
       "properties": {
         "order_id": { "type": "string" },
-        "cart_hash": { "$ref": "_defs.json#/$defs/hash", "description": "AP2 checkout_hash or Verifiable Intent transaction_id" },
+        "cart_ref": { "$ref": "_defs.json#/$defs/hash", "description": "x403's own hash of the cart artifact" },
+        "payment_requirements_ref": { "$ref": "_defs.json#/$defs/hash", "description": "x403's own hash of the exact x402 PaymentRequirements or MPP challenge" },
+        "ap2_checkout_hash": { "$ref": "_defs.json#/$defs/foreign_ref", "description": "the AP2 checkout_hash as AP2 made it, verbatim" },
+        "vi_transaction_id": { "$ref": "_defs.json#/$defs/foreign_ref", "description": "the Verifiable Intent transaction_id as issued, verbatim" },
         "po": { "type": "string" },
-        "payment_requirements_hash": { "$ref": "_defs.json#/$defs/hash", "description": "the exact x402 PaymentRequirements or MPP challenge" },
-        "instruction_id": { "type": "string", "description": "Visa VIC instruction" }
+        "instruction_id": { "type": "string", "description": "Visa VIC instruction" },
+        "cart_hash": { "$ref": "_defs.json#/$defs/hash", "deprecated": true, "description": "earlier name of cart_ref" },
+        "payment_requirements_hash": { "$ref": "_defs.json#/$defs/hash", "deprecated": true, "description": "earlier name of payment_requirements_ref" }
       }
     },
     "idempotency_key": { "type": "string", "maxLength": 200 }
