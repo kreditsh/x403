@@ -1,6 +1,6 @@
 {
   "name": "@kredit/x403",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "description": "x403: a signed risk decision before money moves. Objects, canonical JSON, ES256 signing and verifying, the HTTP binding, a client and middleware.",
   "license": "Apache-2.0",
   "type": "module",

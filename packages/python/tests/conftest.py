@@ -13,7 +13,7 @@ def sample_decision():
         now = datetime.now(timezone.utc)
         decision = {
             "scheme": "x403",
-            "version": "0.1",
+            "version": "0.2",
             "id": "k_test",
             "decision": "allowed",
             "direction": "inbound",

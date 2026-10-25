@@ -65,9 +65,20 @@ packages/    @kredit/x403 (TypeScript) and x403 (Python): objects, canonical JSO
 examples/    an Express checkout, a Cloudflare Worker, a FastAPI merchant, a wallet that preflights
 ```
 
+## Versions
+
+The protocol version is the `version` field of every object. Each protocol version is a git tag and a GitHub release here, and the SDKs that speak it carry the same major.minor.
+
+| Protocol | What changed | Git | npm `@kredit/x403` | PyPI `x403` |
+| --- | --- | --- | --- | --- |
+| 0.2 | Decisions are states: `allowed`, `escalated`, `denied`. Registry effects and `on_timeout` use the same words. | `v0.2.1` | 0.2.1 | 0.2.1 |
+| 0.1 | First draft: verbs `allow`, `escalate`, `deny`. | first commit | 0.1.2 | 0.1.1 |
+
+`0.2.0` of both packages already spoke the 0.2 words but still wrote `0.1` in the `version` field; `0.2.1` corrects the field. Authorities accept queries at `0.1` and `0.2`. See [CHANGELOG.md](CHANGELOG.md).
+
 ## Contributing
 
-Reason codes are added by pull request to the registry with a group, an effect and one sentence. Objects change by minor version only. Open an issue before adding a binding.
+Reason codes are added by pull request to the registry with a group, an effect and one sentence. Objects change by minor version only; every change to an object bumps the protocol version, gets a tag and a release, and the SDKs follow. Open an issue before adding a binding.
 
 ## License
 

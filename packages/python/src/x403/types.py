@@ -20,7 +20,7 @@ OutcomeWord = Literal[
     "settled", "delivered", "disputed", "chargeback", "refund", "reversal", "fraud_confirmed", "false_positive"
 ]
 
-VERSION = "0.1"
+VERSION = "0.2"
 
 
 class KeyRef(TypedDict, total=False):

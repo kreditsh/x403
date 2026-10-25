@@ -26,7 +26,7 @@ def test_decide_fills_scheme_and_sends_key(sample_decision, payment):
     out = client.decide(direction="inbound", payment=payment)
     assert out == decision
     body = json.loads(sent[0][2])
-    assert body["scheme"] == "x403" and body["version"] == "0.1" and body["direction"] == "inbound"
+    assert body["scheme"] == "x403" and body["version"] == "0.2" and body["direction"] == "inbound"
     assert sent[0][1]["authorization"] == "Bearer kr_live_x"
 
 
@@ -59,7 +59,7 @@ def test_verify_fetches_keys_once(sample_decision):
     decision = {**body, "decision_sig": sign(body, key.private_jwk)}
     sent = []
     routes = {
-        "GET https://a.example/.well-known/x403/authority.json": lambda r: (200, {"scheme": "x403", "version": "0.1", "id": "did:web:a.example", "jwks_url": "https://a.example/.well-known/x403/jwks.json", "decide": "https://a.example/x403/decide", "algorithms": ["ES256"]}),
+        "GET https://a.example/.well-known/x403/authority.json": lambda r: (200, {"scheme": "x403", "version": "0.2", "id": "did:web:a.example", "jwks_url": "https://a.example/.well-known/x403/jwks.json", "decide": "https://a.example/x403/decide", "algorithms": ["ES256"]}),
         "GET https://a.example/.well-known/x403/jwks.json": lambda r: (200, {"keys": [key.public_jwk]}),
     }
     client = X403("https://a.example", client=httpx.Client(transport=transport(routes, sent)))

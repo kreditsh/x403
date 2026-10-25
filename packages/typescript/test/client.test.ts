@@ -27,7 +27,7 @@ describe("X403 client", () => {
     });
     expect(out).toEqual(decision);
     const sent = JSON.parse(calls[0].init!.body as string);
-    expect(sent).toMatchObject({ scheme: "x403", version: "0.1", direction: "inbound" });
+    expect(sent).toMatchObject({ scheme: "x403", version: "0.2", direction: "inbound" });
     expect((calls[0].init!.headers as Record<string, string>).authorization).toBe("Bearer kr_live_x");
   });
 
@@ -63,7 +63,7 @@ describe("X403 client", () => {
     const decision = { ...body, decision_sig: await sign(body, key.privateJwk) };
     const { fetchFn, calls } = fakeFetch({
       "GET https://a.example/.well-known/x403/authority.json": () => ({
-        body: { scheme: "x403", version: "0.1", id: "did:web:a.example", jwks_url: "https://a.example/.well-known/x403/jwks.json", decide: "https://a.example/x403/decide", algorithms: ["ES256"] },
+        body: { scheme: "x403", version: "0.2", id: "did:web:a.example", jwks_url: "https://a.example/.well-known/x403/jwks.json", decide: "https://a.example/x403/decide", algorithms: ["ES256"] },
       }),
       "GET https://a.example/.well-known/x403/jwks.json": () => ({ body: { keys: [key.publicJwk] } }),
     });

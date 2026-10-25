@@ -1,7 +1,7 @@
 {
   "$schema": "https://x403.kredit.sh/schemas/registry.json",
   "scheme": "x403",
-  "version": "0.1",
+  "version": "0.2",
   "groups": {
     "identity": { "check": "identity", "status": 401, "says": "a hop in the actor chain is missing or failed" },
     "mandate": { "check": "mandate", "status": 403, "says": "the payment is outside what the principal authorised" },
