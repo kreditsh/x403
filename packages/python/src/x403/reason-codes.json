@@ -1,7 +1,7 @@
 {
   "$schema": "https://x403.kredit.sh/schemas/registry.json",
   "scheme": "x403",
-  "version": "0.1",
+  "version": "0.2",
   "groups": {
     "identity": { "check": "identity", "status": 401, "says": "a hop in the actor chain is missing or failed" },
     "mandate": { "check": "mandate", "status": 403, "says": "the payment is outside what the principal authorised" },
@@ -53,9 +53,9 @@
     "delegation_depth_exceeded": { "group": "scope", "effect": "denied", "says": "the chain is longer than the policy allows" },
     "scope_not_inherited": { "group": "scope", "effect": "denied", "says": "a hop holds more than the hop above it" },
     "separation_violation": { "group": "scope", "effect": "denied", "says": "one party fills two roles the policy keeps apart" },
-    "action_not_granted": { "group": "scope", "effect": "denied", "says": "no tool or grant covers this action" },
-    "action_outside_tools": { "group": "scope", "effect": "escalated", "escalation": "operator_confirm", "says": "the agent has tools, none covers this action" },
-    "agent_unpublished": { "group": "scope", "effect": "denied", "says": "the agent has no approved version in this environment" },
+    "action_not_granted": { "group": "scope", "effect": "denied", "retired": true, "says": "no tool or grant covers this action (a tool-call code, outside the payments scope)" },
+    "action_outside_tools": { "group": "scope", "effect": "escalated", "escalation": "operator_confirm", "retired": true, "says": "the agent has tools, none covers this action (a tool-call code, outside the payments scope)" },
+    "agent_unpublished": { "group": "scope", "effect": "denied", "retired": true, "says": "the agent has no approved version in this environment (a tool-call code, outside the payments scope)" },
 
     "blocked_counterparty": { "group": "policy", "effect": "denied", "says": "the payee is on the executor's block list" },
     "counterparty_not_allowed": { "group": "policy", "effect": "escalated", "escalation": "operator_confirm", "says": "the payee is not on the executor's allow list" },
@@ -125,7 +125,10 @@
     "decision_consumed": { "group": "system", "effect": "denied", "status": 409, "says": "the decision was already executed" },
     "decision_superseded": { "group": "system", "effect": "denied", "status": 409, "says": "a later decision replaced this one" },
     "shadow_mode": { "group": "system", "effect": "note", "status": 200, "says": "decided and logged, not acted on" },
-    "superseded_by_review": { "group": "system", "effect": "note", "says": "a person re-decided this after an escalation" }
+    "superseded_by_review": { "group": "system", "effect": "note", "status": 409, "says": "a person re-decided this after an escalation; the earlier decision answers 409" },
+    "audience_mismatch": { "group": "system", "effect": "denied", "status": 400, "says": "the decision names another executor as its audience" },
+    "subject_mismatch": { "group": "system", "effect": "denied", "status": 400, "says": "the decision was issued for another payment" },
+    "presentation_signature_invalid": { "group": "system", "effect": "denied", "status": 400, "says": "the presentation's signature did not verify" }
   },
   "status": {
     "allowed": 200,
