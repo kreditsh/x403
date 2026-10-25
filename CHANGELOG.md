@@ -4,6 +4,8 @@ Package releases of `@kredit/x403` (npm) and `x403` (PyPI). The protocol version
 
 ## 0.2.2 (tag `v0.2.2`, 2026-10-25), protocol 0.1
 
+PyPI only. The npm package did not change and stays at 0.2.0.
+
 - Decisions are states, not commands: `allowed`, `escalated`, `denied` (the first releases said `allow`, `escalate`, `deny`).
 - Registry effects are `denied`, `escalated`, `note`; `on_timeout` is `denied`, `escalated` or `allowed_flagged`.
 - Every object writes `"version": "0.1"`, the protocol as published.

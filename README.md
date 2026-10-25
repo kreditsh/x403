@@ -71,9 +71,9 @@ Two numbers, on purpose. The **protocol version** is the `version` field of ever
 
 | Package release | Git tag | Protocol it speaks | What changed in the packages |
 | --- | --- | --- | --- |
-| 0.2.2 | `v0.2.2` | 0.1 | Decisions are states: `allowed`, `escalated`, `denied`; registry effects and `on_timeout` use the same words. Changelog and this table. |
-| 0.2.1 (PyPI only) | | 0.1 | Same as 0.2.2 but wrote `0.2` in the `version` field by mistake; use 0.2.2. |
-| 0.2.0 | | 0.1 | The state words, first release. |
+| 0.2.2 (PyPI only) | `v0.2.2` | 0.1 | Decisions are states: `allowed`, `escalated`, `denied`; registry effects and `on_timeout` use the same words. Changelog and this table. The npm package did not change and stays at 0.2.0. |
+| 0.2.1 (PyPI only) | | 0.1 | Wrote `0.2` in the `version` field by mistake; use 0.2.2. |
+| 0.2.0 | | 0.1 | The state words, first release. Current on npm. |
 | 0.1.2 npm, 0.1.1 PyPI | | 0.1 | First draft: verbs `allow`, `escalate`, `deny`. |
 
 See [CHANGELOG.md](CHANGELOG.md).
