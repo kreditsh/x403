@@ -1,0 +1,39 @@
+{
+  "budget_ms": 150,
+  "challenge": {
+    "expires_at": "2099-01-01T00:00:00Z",
+    "nonce": "n_vector_0001"
+  },
+  "direction": "inbound",
+  "mode": "inline",
+  "on_timeout": "denied",
+  "payment": {
+    "amount": "189.00",
+    "counterparty": {
+      "id": "shop.example",
+      "kind": "merchant"
+    },
+    "currency": "USD",
+    "executor": {
+      "category": "5732",
+      "id": "did:web:shop.example",
+      "jurisdiction": "US"
+    },
+    "idempotency_key": "ord_ORD-1",
+    "rail": "card",
+    "references": {
+      "ap2_checkout_hash": "Zm9vYmFyYmF6cXV4Cg",
+      "cart_ref": "sha256:abababababababababababababababababababababababababababababababab",
+      "order_id": "ORD-1"
+    },
+    "type": "payment"
+  },
+  "policy_id": "shop-checkout-v1",
+  "requester": {
+    "id": "did:web:shop.example",
+    "kid": "IYSTfWVkEEZyrkea6dxuW3QW2EKDRcVFfBIUXpYO0Rc"
+  },
+  "requester_sig": "eyJhbGciOiJFUzI1NiIsImtpZCI6IklZU1RmV1ZrRUVaeXJrZWE2ZHh1VzNRVzJFS0RSY1ZGZkJJVVhwWU8wUmMiLCJ0eXAiOiJ4NDAzLXF1ZXJ5K2p3cyJ9.eyJidWRnZXRfbXMiOjE1MCwiY2hhbGxlbmdlIjp7ImV4cGlyZXNfYXQiOiIyMDk5LTAxLTAxVDAwOjAwOjAwWiIsIm5vbmNlIjoibl92ZWN0b3JfMDAwMSJ9LCJkaXJlY3Rpb24iOiJpbmJvdW5kIiwibW9kZSI6ImlubGluZSIsIm9uX3RpbWVvdXQiOiJkZW5pZWQiLCJwYXltZW50Ijp7ImFtb3VudCI6IjE4OS4wMCIsImNvdW50ZXJwYXJ0eSI6eyJpZCI6InNob3AuZXhhbXBsZSIsImtpbmQiOiJtZXJjaGFudCJ9LCJjdXJyZW5jeSI6IlVTRCIsImV4ZWN1dG9yIjp7ImNhdGVnb3J5IjoiNTczMiIsImlkIjoiZGlkOndlYjpzaG9wLmV4YW1wbGUiLCJqdXJpc2RpY3Rpb24iOiJVUyJ9LCJpZGVtcG90ZW5jeV9rZXkiOiJvcmRfT1JELTEiLCJyYWlsIjoiY2FyZCIsInJlZmVyZW5jZXMiOnsiYXAyX2NoZWNrb3V0X2hhc2giOiJabTl2WW1GeVltRjZjWFY0Q2ciLCJjYXJ0X3JlZiI6InNoYTI1NjphYmFiYWJhYmFiYWJhYmFiYWJhYmFiYWJhYmFiYWJhYmFiYWJhYmFiYWJhYmFiYWJhYmFiYWJhYmFiYWJhYmFiIiwib3JkZXJfaWQiOiJPUkQtMSJ9LCJ0eXBlIjoicGF5bWVudCJ9LCJwb2xpY3lfaWQiOiJzaG9wLWNoZWNrb3V0LXYxIiwicmVxdWVzdGVyIjp7ImlkIjoiZGlkOndlYjpzaG9wLmV4YW1wbGUiLCJraWQiOiJJWVNUZldWa0VFWnlya2VhNmR4dVczUVcyRUtEUmNWRmZCSVVYcFlPMFJjIn0sInNjaGVtZSI6Ing0MDMiLCJ2ZXJzaW9uIjoiMC4yIn0.PkzwbQnBxnh7JdWFeSPo0CrtAwawn3EDr2XQT8mMTLKbp61pqL6xK9JZ45kW-42wm0d6wtqeBCyKtk8Xu1LYTA",
+  "scheme": "x403",
+  "version": "0.2"
+}

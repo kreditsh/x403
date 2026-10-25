@@ -1,0 +1,116 @@
+{
+  "cases": [
+    {
+      "expect": {
+        "ok": true
+      },
+      "file": "decision.json",
+      "keys": "authority",
+      "name": "a decision verifies against the authority's key",
+      "object": "decision"
+    },
+    {
+      "audience": "did:web:shop.example",
+      "expect": {
+        "ok": true
+      },
+      "file": "decision.json",
+      "keys": "authority",
+      "name": "the same decision, presented at its audience for its payment",
+      "object": "decision",
+      "payment": "payment.json"
+    },
+    {
+      "audience": "did:web:other.example",
+      "expect": {
+        "ok": false,
+        "reason": "audience_mismatch"
+      },
+      "file": "decision.json",
+      "keys": "authority",
+      "name": "presented at another executor it is void",
+      "object": "decision"
+    },
+    {
+      "audience": "did:web:shop.example",
+      "expect": {
+        "ok": false,
+        "reason": "subject_mismatch"
+      },
+      "file": "decision.json",
+      "keys": "authority",
+      "name": "presented for another payment it is void",
+      "object": "decision",
+      "payment": "payment_other.json"
+    },
+    {
+      "expect": {
+        "ok": false,
+        "reason": "object differs from signed payload"
+      },
+      "file": "decision_tampered.json",
+      "keys": "authority",
+      "name": "a field changed after signing",
+      "object": "decision"
+    },
+    {
+      "expect": {
+        "ok": false,
+        "reason": "decision_expired"
+      },
+      "file": "decision_expired.json",
+      "keys": "authority",
+      "name": "past its expiry",
+      "object": "decision"
+    },
+    {
+      "expect": {
+        "ok": false
+      },
+      "file": "decision.json",
+      "keys": "executor",
+      "name": "the executor's key does not verify the authority's decision",
+      "object": "decision"
+    },
+    {
+      "expect": {
+        "ok": true
+      },
+      "file": "receipt.json",
+      "keys": "executor",
+      "name": "a receipt verifies against the executor's key",
+      "object": "receipt"
+    },
+    {
+      "audience": "did:web:shop.example",
+      "expect": {
+        "ok": true
+      },
+      "file": "local_decision.json",
+      "keys": "executor",
+      "name": "a local decision verifies against the executor's key, for its payment",
+      "object": "local",
+      "payment": "payment.json"
+    },
+    {
+      "expect": {
+        "ok": false,
+        "reason": "a local decision is never an allow"
+      },
+      "file": "local_allowed.json",
+      "keys": "executor",
+      "name": "a local decision is never an allow",
+      "object": "local"
+    },
+    {
+      "expect": {
+        "ok": false
+      },
+      "file": "local_decision.json",
+      "keys": "authority",
+      "name": "a local decision does not verify against the authority's key",
+      "object": "local"
+    }
+  ],
+  "note": "each case names the file, which keys verify it, where it is presented, and the result every implementation must give"
+}

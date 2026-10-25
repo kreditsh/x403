@@ -1,0 +1,6 @@
+# Maintainers who merge. A wire change (spec, schemas, registry, headers) needs a second review.
+*            @kreditsh/maintainers
+/spec/       @kreditsh/maintainers
+/schemas/    @kreditsh/maintainers
+/registry/   @kreditsh/maintainers
+/test-vectors/ @kreditsh/maintainers

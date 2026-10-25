@@ -1,0 +1,74 @@
+{
+  "audience": "did:web:shop.example",
+  "authority": {
+    "id": "did:web:authority.example",
+    "kid": "OEurnbzOGbRad4qOD9lNK8VYMQGvg5cmLnVKeydAqL4"
+  },
+  "binding_hints": {
+    "http_status": 200
+  },
+  "checks": [
+    {
+      "key": "identity",
+      "status": "pass"
+    },
+    {
+      "key": "mandate",
+      "status": "pass"
+    },
+    {
+      "key": "payee",
+      "status": "pass"
+    },
+    {
+      "key": "behavior",
+      "reasons": [
+        "first_use_of_product_class"
+      ],
+      "status": "warn"
+    }
+  ],
+  "constraints": {
+    "currency": "USD",
+    "expires_at": "2099-01-01T00:00:00Z",
+    "max_amount": "250.00"
+  },
+  "decision": "allowed",
+  "decision_sig": "eyJhbGciOiJFUzI1NiIsImtpZCI6Ik9FdXJuYnpPR2JSYWQ0cU9EOWxOSzhWWU1RR3ZnNWNtTG5WS2V5ZEFxTDQiLCJ0eXAiOiJ4NDAzLWRlY2lzaW9uK2p3cyJ9.eyJhdWRpZW5jZSI6ImRpZDp3ZWI6c2hvcC5leGFtcGxlIiwiYXV0aG9yaXR5Ijp7ImlkIjoiZGlkOndlYjphdXRob3JpdHkuZXhhbXBsZSIsImtpZCI6Ik9FdXJuYnpPR2JSYWQ0cU9EOWxOSzhWWU1RR3ZnNWNtTG5WS2V5ZEFxTDQifSwiYmluZGluZ19oaW50cyI6eyJodHRwX3N0YXR1cyI6MjAwfSwiY2hlY2tzIjpbeyJrZXkiOiJpZGVudGl0eSIsInN0YXR1cyI6InBhc3MifSx7ImtleSI6Im1hbmRhdGUiLCJzdGF0dXMiOiJwYXNzIn0seyJrZXkiOiJwYXllZSIsInN0YXR1cyI6InBhc3MifSx7ImtleSI6ImJlaGF2aW9yIiwicmVhc29ucyI6WyJmaXJzdF91c2Vfb2ZfcHJvZHVjdF9jbGFzcyJdLCJzdGF0dXMiOiJ3YXJuIn1dLCJjb25zdHJhaW50cyI6eyJjdXJyZW5jeSI6IlVTRCIsImV4cGlyZXNfYXQiOiIyMDk5LTAxLTAxVDAwOjAwOjAwWiIsIm1heF9hbW91bnQiOiIyNTAuMDAifSwiZGVjaXNpb24iOiJhbGxvd2VkIiwiZGlyZWN0aW9uIjoiaW5ib3VuZCIsImRpc2Nsb3N1cmUiOnsiY2xhaW1zIjpbeyJjbGVhbl9wYXltZW50c19ndGUiOjUwfV0sImhpc3RvcnkiOiJ0aHJlc2hvbGQifSwiZXZpZGVuY2VfaGFzaGVzIjpbXSwiZXhwaXJlc19hdCI6IjIwOTktMDEtMDFUMDA6MDA6MDBaIiwiaWQiOiJrX3ZlY3Rvcl8xIiwiaXNzdWVkX2F0IjoiMjAyNi0xMC0yNVQwMDowMDowMFoiLCJtb2RlIjoiaW5saW5lIiwicG9saWN5X2hhc2giOiJzaGEyNTY6Y2RjZGNkY2RjZGNkY2RjZGNkY2RjZGNkY2RjZGNkY2RjZGNkY2RjZGNkY2RjZGNkY2RjZGNkY2RjZGNkY2RjZCIsInBvbGljeV9pZCI6InNob3AtY2hlY2tvdXQtdjEiLCJxdWVyeV9yZWYiOiJzaGEyNTY6Njg2OWIwMjMyMjBlMDUwYzUyMTExZWNjZTA3NzVmYWUxOTY1ZjY3NzM1NTZhZTkyMmE5YTUxNzMyMWI1NzQwMSIsInJlYXNvbnMiOlsiZmlyc3RfdXNlX29mX3Byb2R1Y3RfY2xhc3MiXSwic2NoZW1lIjoieDQwMyIsInN1YmplY3QiOnsiYW1vdW50IjoiMTg5LjAwIiwiY3VycmVuY3kiOiJVU0QiLCJleGVjdXRvcl9pZCI6ImRpZDp3ZWI6c2hvcC5leGFtcGxlIiwicGF5bWVudF9yZWYiOiJzaGEyNTY6NDg5MWMyYzc1MWRlNjllNWQxMmEzMTk1ZTRiYjk1NWRjNmFiZjlhOGI5Y2VjMjY1OGEzOGQwNWFlNGI5NzU2MyJ9LCJzdXBlcnNlZGVzIjpudWxsLCJ2ZXJpZmllZCI6eyJhZ2VudCI6ImtyZWRpdC1wYXNzcG9ydCIsImh1bWFuIjoiYWJzZW50IiwiaW5zdGFuY2UiOiJ0b2tlbiIsIm9wZXJhdG9yIjoia3liIiwic2Vzc2lvbiI6InByZXNlbnQifSwidmVyc2lvbiI6IjAuMiJ9.Bygofy6KwhICSRC230tP9Q3tcCDzzDE8Co21_HMD5HkPa-BN-O4V6EaMBrZMsXHfb7GA-5xViMCbyGF7Rzy9ow",
+  "direction": "inbound",
+  "disclosure": {
+    "claims": [
+      {
+        "clean_payments_gte": 50
+      }
+    ],
+    "history": "threshold"
+  },
+  "evidence_hashes": [],
+  "expires_at": "2099-01-01T00:00:00Z",
+  "id": "k_vector_1",
+  "issued_at": "2026-10-25T00:00:00Z",
+  "mode": "inline",
+  "policy_hash": "sha256:cdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcd",
+  "policy_id": "shop-checkout-v1",
+  "query_ref": "sha256:6869b023220e050c52111ecce0775fae1965f6773556ae922a9a517321b57401",
+  "reasons": [
+    "first_use_of_product_class"
+  ],
+  "scheme": "x403",
+  "subject": {
+    "amount": "189.00",
+    "currency": "USD",
+    "executor_id": "did:web:shop.example",
+    "payment_ref": "sha256:4891c2c751de69e5d12a3195e4bb955dc6abf9a8b9cec2658a38d05ae4b97563"
+  },
+  "supersedes": null,
+  "verified": {
+    "agent": "kredit-passport",
+    "human": "absent",
+    "instance": "token",
+    "operator": "kyb",
+    "session": "present"
+  },
+  "version": "0.2"
+}

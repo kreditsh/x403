@@ -1,0 +1,16 @@
+{
+  "amount": "189.00",
+  "at": "2026-10-25T00:00:00Z",
+  "authority_id": "did:web:authority.example",
+  "category": "none",
+  "currency": "USD",
+  "decision_hash": "sha256:5609aac392ecc9bb24ebae6492d27104df367a7252e95b34af77556326432feb",
+  "decision_ref": "k_vector_1",
+  "outcome": "settled",
+  "reported_via": "executor",
+  "reporter": {
+    "id": "did:web:shop.example",
+    "kid": "IYSTfWVkEEZyrkea6dxuW3QW2EKDRcVFfBIUXpYO0Rc"
+  },
+  "sig": "eyJhbGciOiJFUzI1NiIsImtpZCI6IklZU1RmV1ZrRUVaeXJrZWE2ZHh1VzNRVzJFS0RSY1ZGZkJJVVhwWU8wUmMiLCJ0eXAiOiJ4NDAzLW91dGNvbWUrandzIn0.eyJhbW91bnQiOiIxODkuMDAiLCJhdCI6IjIwMjYtMTAtMjVUMDA6MDA6MDBaIiwiYXV0aG9yaXR5X2lkIjoiZGlkOndlYjphdXRob3JpdHkuZXhhbXBsZSIsImNhdGVnb3J5Ijoibm9uZSIsImN1cnJlbmN5IjoiVVNEIiwiZGVjaXNpb25faGFzaCI6InNoYTI1Njo1NjA5YWFjMzkyZWNjOWJiMjRlYmFlNjQ5MmQyNzEwNGRmMzY3YTcyNTJlOTViMzRhZjc3NTU2MzI2NDMyZmViIiwiZGVjaXNpb25fcmVmIjoia192ZWN0b3JfMSIsIm91dGNvbWUiOiJzZXR0bGVkIiwicmVwb3J0ZWRfdmlhIjoiZXhlY3V0b3IiLCJyZXBvcnRlciI6eyJpZCI6ImRpZDp3ZWI6c2hvcC5leGFtcGxlIiwia2lkIjoiSVlTVGZXVmtFRVp5cmtlYTZkeHVXM1FXMkVLRFJjVkZmQklVWHBZTzBSYyJ9fQ.36XKmNxqnSrr0RWA1QmKndQPtZILnb6RTE-oqWrK0WeLs2eDno9w7cn_3qbm0eIi1C2QM5PQIYYAn2dLBvPf2w"
+}

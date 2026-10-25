@@ -1,0 +1,21 @@
+{
+  "amount": "189.00",
+  "counterparty": {
+    "id": "shop.example",
+    "kind": "merchant"
+  },
+  "currency": "USD",
+  "executor": {
+    "category": "5732",
+    "id": "did:web:shop.example",
+    "jurisdiction": "US"
+  },
+  "idempotency_key": "ord_ORD-1",
+  "rail": "card",
+  "references": {
+    "ap2_checkout_hash": "Zm9vYmFyYmF6cXV4Cg",
+    "cart_ref": "sha256:abababababababababababababababababababababababababababababababab",
+    "order_id": "ORD-1"
+  },
+  "type": "payment"
+}

@@ -1,0 +1,17 @@
+{
+  "decision_hash": "sha256:5609aac392ecc9bb24ebae6492d27104df367a7252e95b34af77556326432feb",
+  "decision_ref": "k_vector_1",
+  "executed": true,
+  "executed_at": "2026-10-25T00:00:00Z",
+  "execution": {
+    "amount": "189.00",
+    "currency": "USD",
+    "rail": "card",
+    "ref": "auth_vector"
+  },
+  "executor": {
+    "id": "did:web:shop.example",
+    "kid": "IYSTfWVkEEZyrkea6dxuW3QW2EKDRcVFfBIUXpYO0Rc"
+  },
+  "executor_sig": "eyJhbGciOiJFUzI1NiIsImtpZCI6IklZU1RmV1ZrRUVaeXJrZWE2ZHh1VzNRVzJFS0RSY1ZGZkJJVVhwWU8wUmMiLCJ0eXAiOiJ4NDAzLXJlY2VpcHQrandzIn0.eyJkZWNpc2lvbl9oYXNoIjoic2hhMjU2OjU2MDlhYWMzOTJlY2M5YmIyNGViYWU2NDkyZDI3MTA0ZGYzNjdhNzI1MmU5NWIzNGFmNzc1NTYzMjY0MzJmZWIiLCJkZWNpc2lvbl9yZWYiOiJrX3ZlY3Rvcl8xIiwiZXhlY3V0ZWQiOnRydWUsImV4ZWN1dGVkX2F0IjoiMjAyNi0xMC0yNVQwMDowMDowMFoiLCJleGVjdXRpb24iOnsiYW1vdW50IjoiMTg5LjAwIiwiY3VycmVuY3kiOiJVU0QiLCJyYWlsIjoiY2FyZCIsInJlZiI6ImF1dGhfdmVjdG9yIn0sImV4ZWN1dG9yIjp7ImlkIjoiZGlkOndlYjpzaG9wLmV4YW1wbGUiLCJraWQiOiJJWVNUZldWa0VFWnlya2VhNmR4dVczUVcyRUtEUmNWRmZCSVVYcFlPMFJjIn19.UIVJIWb2vUyod4Vw0G0-m_GuzRMz8O7QfIn4coKHKNnggS-duuSnuS46jaiXCeq4qbomCbl1TjcXcoHNedrxXg"
+}

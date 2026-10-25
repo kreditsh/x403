@@ -1,0 +1,32 @@
+{
+  "audience": "did:web:shop.example",
+  "authority": {
+    "id": "did:web:authority.example"
+  },
+  "binding_hints": {
+    "http_status": 403
+  },
+  "decision": "allowed",
+  "direction": "inbound",
+  "executor": {
+    "id": "did:web:shop.example",
+    "kid": "IYSTfWVkEEZyrkea6dxuW3QW2EKDRcVFfBIUXpYO0Rc"
+  },
+  "expires_at": "2099-01-01T00:00:00Z",
+  "id": "local_vector_bad",
+  "issued_at": "2026-10-25T00:00:00Z",
+  "local": true,
+  "local_sig": "eyJhbGciOiJFUzI1NiIsImtpZCI6IklZU1RmV1ZrRUVaeXJrZWE2ZHh1VzNRVzJFS0RSY1ZGZkJJVVhwWU8wUmMiLCJ0eXAiOiJ4NDAzLWxvY2FsK2p3cyJ9.eyJhdWRpZW5jZSI6ImRpZDp3ZWI6c2hvcC5leGFtcGxlIiwiYXV0aG9yaXR5Ijp7ImlkIjoiZGlkOndlYjphdXRob3JpdHkuZXhhbXBsZSJ9LCJiaW5kaW5nX2hpbnRzIjp7Imh0dHBfc3RhdHVzIjo0MDN9LCJkZWNpc2lvbiI6ImFsbG93ZWQiLCJkaXJlY3Rpb24iOiJpbmJvdW5kIiwiZXhlY3V0b3IiOnsiaWQiOiJkaWQ6d2ViOnNob3AuZXhhbXBsZSIsImtpZCI6IklZU1RmV1ZrRUVaeXJrZWE2ZHh1VzNRVzJFS0RSY1ZGZkJJVVhwWU8wUmMifSwiZXhwaXJlc19hdCI6IjIwOTktMDEtMDFUMDA6MDA6MDBaIiwiaWQiOiJsb2NhbF92ZWN0b3JfYmFkIiwiaXNzdWVkX2F0IjoiMjAyNi0xMC0yNVQwMDowMDowMFoiLCJsb2NhbCI6dHJ1ZSwicG9saWN5X2lkIjoic2hvcC1jaGVja291dC12MSIsInJlYXNvbnMiOlsiYXV0aG9yaXR5X3RpbWVvdXQiXSwic2NoZW1lIjoieDQwMyIsInN1YmplY3QiOnsiYW1vdW50IjoiMTg5LjAwIiwiY3VycmVuY3kiOiJVU0QiLCJleGVjdXRvcl9pZCI6ImRpZDp3ZWI6c2hvcC5leGFtcGxlIiwicGF5bWVudF9yZWYiOiJzaGEyNTY6NDg5MWMyYzc1MWRlNjllNWQxMmEzMTk1ZTRiYjk1NWRjNmFiZjlhOGI5Y2VjMjY1OGEzOGQwNWFlNGI5NzU2MyJ9LCJ2ZXJzaW9uIjoiMC4yIn0.kbVEHMNgo4JL9NaBdsrb2SQWvF27amc6QF6F7_x3QohoQzmQXSpOV6XuaUfNZFCA0MnYWWI7vWQK0z3egC7xGQ",
+  "policy_id": "shop-checkout-v1",
+  "reasons": [
+    "authority_timeout"
+  ],
+  "scheme": "x403",
+  "subject": {
+    "amount": "189.00",
+    "currency": "USD",
+    "executor_id": "did:web:shop.example",
+    "payment_ref": "sha256:4891c2c751de69e5d12a3195e4bb955dc6abf9a8b9cec2658a38d05ae4b97563"
+  },
+  "version": "0.2"
+}
