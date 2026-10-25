@@ -3,7 +3,8 @@ import { X403 } from "../src/client.js";
 import { HEADER_DECISION, HEADER_PRESENTATION, decode, encode } from "../src/headers.js";
 import { x403 } from "../src/middleware/express.js";
 import { preflight, withX403 } from "../src/middleware/fetch.js";
-import type { Decision, Payment } from "../src/types.js";
+import { generateKey, verifyLocalDecision } from "../src/jws.js";
+import type { AnyDecision, Decision, LocalDecision, Payment } from "../src/types.js";
 import { sampleDecision } from "./jws.test.js";
 
 const payment: Payment = { type: "payment", amount: "189.00", currency: "USD", rail: "card", executor: { id: "shop.example" } };
@@ -60,7 +61,7 @@ describe("express middleware", () => {
   });
 
   it("answers a non-allowed with the decision's status and body", async () => {
-    const denied = sampleDecision({ decision: "denied", reasons: ["sanctions_hit"], http_status: 451, constraints: undefined });
+    const denied = sampleDecision({ decision: "denied", reasons: ["sanctions_hit"], binding_hints: { http_status: 451 }, constraints: undefined });
     const { client } = authority(denied);
     const { req, res, next } = fakeExpress();
     await x403({ client, payment: () => payment })(req, res, next);
@@ -70,25 +71,57 @@ describe("express middleware", () => {
   });
 
   it("computes the status when the authority left it out", async () => {
-    const escalate = sampleDecision({ decision: "escalated", reasons: ["above_review_threshold"], escalation: { kind: "human_stepup" }, http_status: undefined, constraints: undefined });
+    const escalate = sampleDecision({ decision: "escalated", reasons: ["above_review_threshold"], escalation: { kind: "human_stepup" }, binding_hints: undefined, constraints: undefined });
     const { client } = authority(escalate);
     const { req, res, next } = fakeExpress();
     await x403({ client, payment: () => payment })(req, res, next);
     expect(res.statusCode).toBe(428);
   });
 
-  it("fails closed when the authority is unreachable", async () => {
+  it("fails closed with an executor-signed local decision when the authority is unreachable", async () => {
     const { client } = authority(new Error("connection refused"));
     const { req, res, next } = fakeExpress();
-    const seen: Decision[] = [];
-    await x403({ client, payment: () => payment, onDecision: (d) => void seen.push(d) })(req, res, next);
+    const seen: AnyDecision[] = [];
+    const key = await generateKey();
+    await x403({ client, payment: () => payment, executor: { id: "shop.example", kid: key.kid }, privateJwk: key.privateJwk, onDecision: (d) => void seen.push(d) })(req, res, next);
     expect(res.statusCode).toBe(403);
-    expect(seen[0].reasons).toEqual(["authority_timeout"]);
-    expect(seen[0].authority).toBeNull();
+    const local = seen[0] as LocalDecision;
+    expect(local.local).toBe(true);
+    expect(local.decision).toBe("denied");
+    expect(local.reasons).toEqual(["authority_timeout"]);
+    expect(local.audience).toBe("shop.example");
+    expect(local.subject.amount).toBe("189.00");
+    expect((await verifyLocalDecision(local, key.publicJwk, { audience: "shop.example", payment })).ok).toBe(true);
+    expect(res.headers["Cache-Control"]).toBe("no-store");
+  });
+
+  it("never allows on timeout, even when the policy says escalated", async () => {
+    const { client } = authority(new Error("connection refused"));
+    const { req, res } = fakeExpress();
+    await x403({ client, payment: () => payment, onTimeout: "escalated" })(req, res, vi.fn());
+    expect((req.x403 as LocalDecision).decision).toBe("escalated");
+    expect((req.x403 as LocalDecision).escalation?.kind).toBe("executor_review");
+    expect(res.statusCode).toBe(403);
+  });
+
+  it("treats an oversized presentation header as no presentation", async () => {
+    const { client, sent } = authority(sampleDecision());
+    const big = encode({ evidence: [{ type: "other", ref: "sha256:" + "00".repeat(32), inline: "x".repeat(9000) }] });
+    const { req, res, next } = fakeExpress({ [HEADER_PRESENTATION.toLowerCase()]: big });
+    await x403({ client, payment: () => payment })(req, res, next);
+    expect(next).toHaveBeenCalled();
+    expect((sent[0] as { evidence: unknown[] }).evidence).toEqual([]);
+  });
+
+  it("marks every response that carries the header no-store", async () => {
+    const { client } = authority(sampleDecision());
+    const { req, res, next } = fakeExpress();
+    await x403({ client, payment: () => payment })(req, res, next);
+    expect(res.headers["Cache-Control"]).toBe("no-store");
   });
 
   it("in shadow mode logs and always passes", async () => {
-    const denied = sampleDecision({ decision: "denied", reasons: ["blocked_counterparty"], http_status: 403 });
+    const denied = sampleDecision({ decision: "denied", reasons: ["blocked_counterparty"], binding_hints: { http_status: 403 } });
     const { client } = authority(denied);
     const { req, res, next } = fakeExpress();
     await x403({ client, payment: () => payment, mode: "shadow" })(req, res, next);
@@ -107,10 +140,11 @@ describe("fetch middleware", () => {
   });
 
   it("refuses with the decision as the body", async () => {
-    const { client } = authority(sampleDecision({ decision: "denied", reasons: ["velocity_high"], http_status: 429 }));
+    const { client } = authority(sampleDecision({ decision: "denied", reasons: ["velocity_high"], binding_hints: { http_status: 429 } }));
     const handler = withX403(async () => new Response("never"), { client, payment: () => payment });
     const res = await handler(new Request("https://shop.example/checkout"));
     expect(res.status).toBe(429);
+    expect(res.headers.get("cache-control")).toBe("no-store");
     expect(((await res.json()) as Decision).reasons).toEqual(["velocity_high"]);
   });
 

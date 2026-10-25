@@ -1,16 +1,15 @@
 // Express: ask before the handler runs. On allowed the decision rides on req.x403 and the
 // response carries X403-Decision; on anything else the response is the decision itself,
-// with the status the decision names.
+// with the status the decision names. Every response that carries the header is no-store.
 
-import { HEADER_DECISION, encode } from "../headers.js";
-import { statusFor } from "../registry.js";
-import type { Decision } from "../types.js";
-import { buildQuery, clientOf, postReceipt, timeoutDecision, type GateOptions, type ReceiptInput } from "./shared.js";
+import { CACHE_CONTROL, HEADER_DECISION, encode } from "../headers.js";
+import type { AnyDecision } from "../types.js";
+import { buildQuery, clientOf, executorOf, localDecision, postReceipt, statusOf, type GateOptions, type ReceiptInput } from "./shared.js";
 
 /** The slice of Express this middleware touches, so the package needs no Express types. */
 export interface ExpressLikeRequest {
   get(name: string): string | undefined;
-  x403?: Decision;
+  x403?: AnyDecision;
   [k: string]: unknown;
 }
 
@@ -31,7 +30,7 @@ export function x403<Req extends ExpressLikeRequest = ExpressLikeRequest>(option
   const client = clientOf(options);
   return async function x403Gate(req: Req, res: ExpressLikeResponse, next: ExpressNext): Promise<void> {
     const headers = { get: (name: string) => req.get(name) };
-    let decision: Decision;
+    let decision: AnyDecision;
     let query;
     try {
       query = await buildQuery(req, headers, options);
@@ -39,7 +38,7 @@ export function x403<Req extends ExpressLikeRequest = ExpressLikeRequest>(option
     } catch (error) {
       const fallback = options.onError ? await options.onError(error, req) : undefined;
       if (fallback) decision = fallback;
-      else if (query) decision = timeoutDecision(query);
+      else if (query) decision = await localDecision(query, executorOf(query, options), options.privateJwk);
       else {
         next(error);
         return;
@@ -48,12 +47,13 @@ export function x403<Req extends ExpressLikeRequest = ExpressLikeRequest>(option
     await options.onDecision?.(decision, req);
     req.x403 = decision;
     res.set(HEADER_DECISION, encode(decision));
-    const shadow = decision.mode === "shadow" || options.mode === "shadow";
+    res.set("Cache-Control", CACHE_CONTROL);
+    const shadow = ("mode" in decision && decision.mode === "shadow") || options.mode === "shadow";
     if (decision.decision === "allowed" || shadow || options.passThrough) {
       next();
       return;
     }
-    res.status(decision.http_status ?? statusFor(decision)).json(decision);
+    res.status(statusOf(decision)).json(decision);
   };
 }
 

@@ -14,8 +14,8 @@ from cryptography.hazmat.primitives import hashes
 from cryptography.hazmat.primitives.asymmetric import ec
 from cryptography.hazmat.primitives.asymmetric.utils import decode_dss_signature, encode_dss_signature
 
-from .jcs import canonical_bytes, canonicalize, sha256_hex
-from .types import JWK, JWKS, Decision, Outcome, Receipt, RiskQuery
+from .jcs import canonical_bytes, canonicalize, hash_object, sha256_hex
+from .types import JWK, JWKS, Decision, LocalDecision, Outcome, Payment, Receipt, RiskQuery, Subject
 
 CURVE = ec.SECP256R1()
 COORD = 32
@@ -151,9 +151,46 @@ def _parse_time(text: str) -> datetime:
     return dt if dt.tzinfo else dt.replace(tzinfo=timezone.utc)
 
 
-def verify_decision(decision: Decision, jwks: JWKS | JWK, now: datetime | None = None) -> VerifyResult:
+def payment_hash(payment: Payment | dict[str, Any]) -> str:
+    """The hash a decision's subject carries: the payment object as presented."""
+    return hash_object(payment)
+
+
+def subject_of(payment: Payment | dict[str, Any]) -> Subject:
+    """The subject a decision for `payment` must carry."""
+    return {
+        "payment_ref": payment_hash(payment),
+        "amount": payment["amount"],
+        "currency": payment["currency"],
+        "executor_id": payment["executor"]["id"],
+    }
+
+
+def _check_binding(
+    decision: dict[str, Any], audience: str | None, payment: dict[str, Any] | None, kid: str | None
+) -> VerifyResult | None:
+    if audience is not None and decision.get("audience") != audience:
+        return VerifyResult(False, "audience_mismatch", kid)
+    if payment is not None:
+        want = subject_of(payment)
+        got = decision.get("subject") or {}
+        if any(got.get(k) != want[k] for k in ("payment_ref", "amount", "currency", "executor_id")):  # type: ignore[literal-required]
+            return VerifyResult(False, "subject_mismatch", kid)
+    return None
+
+
+def verify_decision(
+    decision: Decision,
+    jwks: JWKS | JWK,
+    now: datetime | None = None,
+    *,
+    audience: str | None = None,
+    payment: Payment | dict[str, Any] | None = None,
+) -> VerifyResult:
     """A decision verifies when decision_sig is a valid ES256 signature by one of the
-    authority's keys over the object without decision_sig, and it has not expired."""
+    authority's keys over the object without decision_sig, it has not expired, and, when
+    the verifier says where it is being presented, its audience and subject are this
+    executor and this payment."""
     sig = decision.get("decision_sig")
     if not sig:
         return VerifyResult(False, "unsigned")
@@ -170,6 +207,45 @@ def verify_decision(decision: Decision, jwks: JWKS | JWK, now: datetime | None =
     expires = decision.get("expires_at")
     if expires and _parse_time(expires) <= (now or datetime.now(timezone.utc)):
         return VerifyResult(False, "decision_expired", kid)
+    bound = _check_binding(dict(decision), audience, payment, kid)
+    if bound is not None:
+        return bound
+    return VerifyResult(True, None, kid)
+
+
+def sign_local_decision(local: LocalDecision, private_jwk: JWK, kid: str | None = None) -> LocalDecision:
+    """Sign a local decision: local_sig is by the executor over the object without local_sig."""
+    body = {k: v for k, v in local.items() if k != "local_sig"}
+    kid = kid or (local.get("executor") or {}).get("kid")
+    return {**body, "local_sig": sign(body, private_jwk, kid=kid, typ="x403-local+jws")}  # type: ignore[return-value]
+
+
+def verify_local_decision(
+    local: LocalDecision,
+    jwks: JWKS | JWK,
+    *,
+    audience: str | None = None,
+    payment: Payment | dict[str, Any] | None = None,
+) -> VerifyResult:
+    """A local decision verifies against the executor's keys, never an authority's, and is never an allow."""
+    if local.get("local") is not True:
+        return VerifyResult(False, "not a local decision")
+    if local.get("decision") == "allowed":
+        return VerifyResult(False, "a local decision is never an allow")
+    sig = local.get("local_sig")
+    if not sig:
+        return VerifyResult(False, "unsigned")
+    body = {k: v for k, v in local.items() if k != "local_sig"}
+    try:
+        verified = verify(sig, jwks)
+    except ValueError as e:
+        return VerifyResult(False, str(e))
+    kid = verified.header.get("kid")
+    if verified.payload_text != canonicalize(body):
+        return VerifyResult(False, "object differs from signed payload", kid)
+    bound = _check_binding(dict(local), audience, payment, kid)
+    if bound is not None:
+        return bound
     return VerifyResult(True, None, kid)
 
 

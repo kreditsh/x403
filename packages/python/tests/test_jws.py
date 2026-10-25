@@ -62,7 +62,52 @@ def test_countersigns_receipts_outcomes_queries(sample_decision):
     assert verify(outcome["sig"], key.public_jwk).header["typ"] == "x403-outcome+jws"
 
     query = sign_query(
-        {"scheme": "x403", "version": "0.1", "direction": "inbound", "payment": {"type": "payment", "amount": "1.00", "currency": "USD", "rail": "card", "executor": {"id": "x"}}, "requester": {"id": "did:web:shop.example"}},
+        {"scheme": "x403", "version": "0.2", "direction": "inbound", "payment": {"type": "payment", "amount": "1.00", "currency": "USD", "rail": "card", "executor": {"id": "x"}}, "requester": {"id": "did:web:shop.example"}},
         key.private_jwk,
     )
     assert verify(query["requester_sig"], key.public_jwk).payload["direction"] == "inbound"
+
+
+def test_a_decision_is_bound_to_one_payment_and_one_executor(sample_decision, payment):
+    from x403.jws import payment_hash, subject_of
+
+    key = generate_key()
+    jwks = {"keys": [key.public_jwk]}
+    body = sample_decision(authority={"id": "did:web:a.example", "kid": key.kid}, subject=subject_of(payment), audience="shop.example")
+    decision = {**body, "decision_sig": sign(body, key.private_jwk)}
+    assert verify_decision(decision, jwks, audience="shop.example", payment=payment).ok
+    assert verify_decision(decision, jwks, audience="other.example").reason == "audience_mismatch"
+    assert verify_decision(decision, jwks, payment={**payment, "amount": "289.00"}).reason == "subject_mismatch"
+    # an earlier decision without a subject is void for any payment a verifier names
+    bare = sample_decision(authority={"id": "did:web:a.example", "kid": key.kid})
+    bare.pop("subject"), bare.pop("audience")
+    old = {**bare, "decision_sig": sign(bare, key.private_jwk)}
+    assert verify_decision(old, jwks).ok
+    assert verify_decision(old, jwks, payment=payment).reason == "subject_mismatch"
+    assert payment_hash(payment).startswith("sha256:")
+
+
+def test_a_local_decision_is_signed_by_the_executor_and_never_an_allow(payment):
+    from x403.jws import sign_local_decision, subject_of, verify_local_decision
+
+    key = generate_key()
+    base = {
+        "scheme": "x403",
+        "version": "0.2",
+        "id": "local_1",
+        "decision": "denied",
+        "local": True,
+        "subject": subject_of(payment),
+        "audience": "shop.example",
+        "policy_id": "shop-checkout-v1",
+        "reasons": ["authority_timeout"],
+        "executor": {"id": "shop.example", "kid": key.kid},
+        "issued_at": "2026-10-25T00:00:00Z",
+        "expires_at": "2099-01-01T00:00:00Z",
+    }
+    local = sign_local_decision(base, key.private_jwk)
+    assert verify(local["local_sig"], key.public_jwk).header["typ"] == "x403-local+jws"
+    assert verify_local_decision(local, key.public_jwk, audience="shop.example", payment=payment).ok
+    assert not verify_local_decision({**local, "decision": "escalated"}, key.public_jwk).ok
+    allowed = sign_local_decision({**base, "decision": "allowed"}, key.private_jwk)
+    assert "never an allow" in verify_local_decision(allowed, key.public_jwk).reason

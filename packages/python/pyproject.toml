@@ -4,7 +4,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "x403"
-version = "0.2.2"
+version = "0.3.0"
 description = "x403: a signed risk decision before money moves. Objects, canonical JSON, ES256 signing and verifying, the HTTP binding, a client and FastAPI middleware."
 readme = "README.md"
 license = "Apache-2.0"

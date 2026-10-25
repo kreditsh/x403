@@ -2,10 +2,10 @@
 // verification against the authority's published keys.
 
 import { decode, encode } from "./headers.js";
-import { verifyDecision, type VerifyResult } from "./jws.js";
+import { verifyDecision, type VerifyOptions, type VerifyResult } from "./jws.js";
 import type { Authority, Decision, JWKS, Outcome, QueryInput, Receipt, RiskQuery } from "./types.js";
 
-export const VERSION = "0.1";
+export const VERSION = "0.2";
 
 export class X403Error extends Error {
   readonly status: number;
@@ -116,9 +116,12 @@ export class X403 {
     return this.keys;
   }
 
-  /** Offline verification of a decision against the cached keys. */
-  async verify(decision: Decision): Promise<VerifyResult> {
-    return verifyDecision(decision, await this.jwks());
+  /**
+   * Offline verification of a decision against the cached keys. Pass the executor's own id
+   * and the payment about to run so a decision for another executor or another payment is void.
+   */
+  async verify(decision: Decision, options: VerifyOptions = {}): Promise<VerifyResult> {
+    return verifyDecision(decision, await this.jwks(), options);
   }
 
   /** Forget cached keys, e.g. after a verify fails on an unknown kid. */

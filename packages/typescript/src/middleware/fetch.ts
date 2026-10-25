@@ -1,12 +1,11 @@
 // The fetch-style handler: a Cloudflare Worker, Hono, a Next route. Same gate as Express,
-// on Request and Response.
+// on Request and Response. Every response that carries X403-Decision is no-store.
 
-import { HEADER_DECISION, encode } from "../headers.js";
-import { statusFor } from "../registry.js";
-import type { Decision } from "../types.js";
-import { buildQuery, clientOf, postReceipt, timeoutDecision, type GateOptions, type ReceiptInput } from "./shared.js";
+import { CACHE_CONTROL, HEADER_DECISION, encode } from "../headers.js";
+import type { AnyDecision } from "../types.js";
+import { buildQuery, clientOf, executorOf, localDecision, postReceipt, statusOf, type GateOptions, type ReceiptInput } from "./shared.js";
 
-export type FetchHandler<Env = unknown> = (request: Request, decision: Decision, env: Env) => Response | Promise<Response>;
+export type FetchHandler<Env = unknown> = (request: Request, decision: AnyDecision, env: Env) => Response | Promise<Response>;
 
 export type FetchOptions<Env = unknown> = GateOptions<Request> & {
   /** With true, a non-allowed still reaches the handler, which reads the decision. */
@@ -14,16 +13,17 @@ export type FetchOptions<Env = unknown> = GateOptions<Request> & {
   env?: Env;
 };
 
-function withDecisionHeader(response: Response, decision: Decision): Response {
+function withDecisionHeader(response: Response, decision: AnyDecision): Response {
   const out = new Response(response.body, response);
   out.headers.set(HEADER_DECISION, encode(decision));
+  out.headers.set("Cache-Control", CACHE_CONTROL);
   return out;
 }
 
 export function withX403<Env = unknown>(handler: FetchHandler<Env>, options: FetchOptions<Env>) {
   const client = clientOf(options);
   return async function gated(request: Request, env?: Env): Promise<Response> {
-    let decision: Decision;
+    let decision: AnyDecision;
     let query;
     try {
       query = await buildQuery(request, request.headers, options);
@@ -31,17 +31,17 @@ export function withX403<Env = unknown>(handler: FetchHandler<Env>, options: Fet
     } catch (error) {
       const fallback = options.onError ? await options.onError(error, request) : undefined;
       if (fallback) decision = fallback;
-      else if (query) decision = timeoutDecision(query);
+      else if (query) decision = await localDecision(query, executorOf(query, options), options.privateJwk);
       else throw error;
     }
     await options.onDecision?.(decision, request);
-    const shadow = decision.mode === "shadow" || options.mode === "shadow";
+    const shadow = ("mode" in decision && decision.mode === "shadow") || options.mode === "shadow";
     if (decision.decision === "allowed" || shadow || options.passThrough) {
       return withDecisionHeader(await handler(request, decision, (env ?? options.env) as Env), decision);
     }
     return new Response(JSON.stringify(decision), {
-      status: decision.http_status ?? statusFor(decision),
-      headers: { "content-type": "application/json", [HEADER_DECISION]: encode(decision) },
+      status: statusOf(decision),
+      headers: { "content-type": "application/json", "cache-control": CACHE_CONTROL, [HEADER_DECISION]: encode(decision) },
     });
   };
 }
@@ -53,8 +53,8 @@ export function preflight(options: GateOptions<Request>) {
     const query = await buildQuery(request, request.headers, { ...options, mode: "preflight" });
     const decision = await client.decide(query);
     return new Response(null, {
-      status: decision.decision === "allowed" ? 200 : (decision.http_status ?? statusFor(decision)),
-      headers: { [HEADER_DECISION]: encode(decision) },
+      status: decision.decision === "allowed" ? 200 : statusOf(decision),
+      headers: { "cache-control": CACHE_CONTROL, [HEADER_DECISION]: encode(decision) },
     });
   };
 }

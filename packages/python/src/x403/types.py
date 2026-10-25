@@ -13,14 +13,17 @@ EscalationKind = Literal["agent_adjust", "operator_confirm", "human_stepup", "ex
 CheckKey = Literal["identity", "mandate", "payee", "behavior"]
 CheckStatus = Literal["pass", "warn", "fail", "skip"]
 HopStatus = Literal["verified", "asserted", "absent"]
-OnTimeout = Literal["denied", "escalated", "allowed_flagged"]
+# never an allow: a slow authority must not be a bypass
+OnTimeout = Literal["denied", "escalated"]
 Effect = Literal["denied", "escalated", "note"]
 Rail = Literal["card", "usdc", "ach", "wire", "skyfire", "kite", "mpp", "x402", "agentic-token", "crypto"]
 OutcomeWord = Literal[
     "settled", "delivered", "disputed", "chargeback", "refund", "reversal", "fraud_confirmed", "false_positive"
 ]
+OutcomeCategory = Literal["attack", "accident", "control_failure", "commercial_dispute", "none"]
+ReportedVia = Literal["executor", "requester", "issuer", "network", "facilitator", "psp", "authority"]
 
-VERSION = "0.1"
+VERSION = "0.2"
 
 
 class KeyRef(TypedDict, total=False):
@@ -52,10 +55,15 @@ class Item(TypedDict, total=False):
 
 class References(TypedDict, total=False):
     order_id: str
-    cart_hash: str
+    cart_ref: str
+    payment_requirements_ref: str
+    ap2_checkout_hash: str
+    vi_transaction_id: str
     po: str
-    payment_requirements_hash: str
     instruction_id: str
+    # earlier names, still read
+    cart_hash: str
+    payment_requirements_hash: str
 
 
 class Payment(TypedDict, total=False):
@@ -167,6 +175,21 @@ class Check(TypedDict, total=False):
     reasons: list[str]
 
 
+class Subject(TypedDict):
+    """The one payment a decision is for. A verifier checks it before trusting an allow."""
+
+    payment_ref: str
+    amount: str
+    currency: str
+    executor_id: str
+
+
+class BindingHints(TypedDict, total=False):
+    """Advisory: how the executor answers on the HTTP binding. Not part of the decision's meaning."""
+
+    http_status: int
+
+
 class Constraints(TypedDict, total=False):
     max_amount: str
     currency: str
@@ -197,9 +220,12 @@ class Decision(TypedDict, total=False):
     decision: DecisionWord
     direction: Direction
     mode: Mode
+    subject: Subject
+    audience: str
+    query_ref: str
     policy_id: str
     policy_hash: str
-    authority: KeyRef | None
+    authority: KeyRef
     verified: dict[str, str]
     checks: list[Check]
     reasons: list[str]
@@ -207,12 +233,41 @@ class Decision(TypedDict, total=False):
     escalation: Escalation
     evidence_hashes: list[str]
     disclosure: Disclosure
-    http_status: int
+    binding_hints: BindingHints
+    http_status: int  # written by earlier authorities; read binding_hints
     supersedes: str | None
-    latency_ms: int
     issued_at: str
     expires_at: str
     decision_sig: str
+
+
+class LocalDecision(TypedDict, total=False):
+    """What an executor signs itself when the authority gave no decision inside the budget.
+    Never an allow, never presented as the authority's; the authority stores it as a receipt."""
+
+    scheme: Literal["x403"]
+    version: str
+    id: str
+    decision: Literal["denied", "escalated"]
+    local: Literal[True]
+    direction: Direction
+    subject: Subject
+    audience: str
+    query_ref: str
+    policy_id: str
+    policy_hash: str
+    authority: KeyRef
+    reasons: list[str]
+    escalation: Escalation
+    binding_hints: BindingHints
+    executor: KeyRef
+    issued_at: str
+    expires_at: str
+    local_sig: str
+
+
+def is_local(decision: dict) -> bool:
+    return decision.get("local") is True
 
 
 class Execution(TypedDict, total=False):
@@ -230,11 +285,17 @@ class Receipt(TypedDict, total=False):
     execution: Execution
     executor: KeyRef
     executor_sig: str
+    # a local decision the executor made on timeout, filed with the authority as a receipt
+    local_decision: LocalDecision
 
 
 class Outcome(TypedDict, total=False):
     decision_ref: str
+    decision_hash: str
+    authority_id: str
     outcome: OutcomeWord
+    category: OutcomeCategory
+    reported_via: ReportedVia
     at: str
     amount: str
     currency: str
@@ -254,6 +315,7 @@ class Policy(TypedDict, total=False):
     required_hops: list[str]
     accepted_evidence: list[str]
     accepted_mandates: list[str]
+    reporters: list[KeyRef]
     step_up: dict[str, str]
     caps: dict[str, str]
     rails: list[str]

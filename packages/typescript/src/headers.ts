@@ -9,6 +9,11 @@ export const HEADER_PRESENTATION = "X403-Presentation";
 export const HEADER_DECISION = "X403-Decision";
 export const HEADER_RISK_DECISION = "Risk-Decision";
 export const AUTH_SCHEME = "Risk";
+/** A single header value never exceeds this; anything larger travels in a body as application/x403+json. */
+export const MAX_HEADER_BYTES = 8192;
+export const MEDIA_TYPE = "application/x403+json";
+/** Every response that carries an x403 header carries this too: signed objects are never cached. */
+export const CACHE_CONTROL = "no-store";
 
 const decoder = new TextDecoder();
 
@@ -17,7 +22,9 @@ export function encode(value: unknown): string {
 }
 
 export function decode<T = unknown>(text: string): T {
-  return JSON.parse(decoder.decode(fromBase64url(text.trim()))) as T;
+  const trimmed = text.trim();
+  if (trimmed.length > MAX_HEADER_BYTES) throw new RangeError(`header value exceeds ${MAX_HEADER_BYTES} bytes`);
+  return JSON.parse(decoder.decode(fromBase64url(trimmed))) as T;
 }
 
 /** The presentation an agent sends: the hops and evidence, or the id of a prior preflight decision. */

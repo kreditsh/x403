@@ -14,6 +14,11 @@ HEADER_PRESENTATION = "X403-Presentation"
 HEADER_DECISION = "X403-Decision"
 HEADER_RISK_DECISION = "Risk-Decision"
 AUTH_SCHEME = "Risk"
+# A single header value never exceeds this; anything larger travels in a body as application/x403+json.
+MAX_HEADER_BYTES = 8192
+MEDIA_TYPE = "application/x403+json"
+# Every response that carries an x403 header carries this too: signed objects are never cached.
+CACHE_CONTROL = "no-store"
 
 
 def encode(value: Any) -> str:
@@ -21,6 +26,9 @@ def encode(value: Any) -> str:
 
 
 def decode(text: str) -> Any:
+    text = text.strip()
+    if len(text) > MAX_HEADER_BYTES:
+        raise ValueError(f"header value exceeds {MAX_HEADER_BYTES} bytes")
     return json.loads(from_base64url(text).decode("utf-8"))
 
 

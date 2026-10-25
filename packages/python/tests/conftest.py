@@ -13,11 +13,13 @@ def sample_decision():
         now = datetime.now(timezone.utc)
         decision = {
             "scheme": "x403",
-            "version": "0.1",
+            "version": "0.2",
             "id": "k_test",
             "decision": "allowed",
             "direction": "inbound",
             "mode": "inline",
+            "subject": {"payment_ref": "sha256:" + "ef" * 32, "amount": "189.00", "currency": "USD", "executor_id": "shop.example"},
+            "audience": "shop.example",
             "policy_id": "shop-checkout-v1",
             "policy_hash": "sha256:" + "ab" * 32,
             "authority": {"id": "did:web:authority.example", "kid": "k1"},
@@ -30,7 +32,7 @@ def sample_decision():
             "reasons": [],
             "constraints": {"max_amount": "250.00", "currency": "USD"},
             "evidence_hashes": [],
-            "http_status": 200,
+            "binding_hints": {"http_status": 200},
             "supersedes": None,
             "issued_at": _iso(now),
             "expires_at": _iso(now + timedelta(minutes=10)),

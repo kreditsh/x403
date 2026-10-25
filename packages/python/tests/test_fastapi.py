@@ -46,32 +46,57 @@ def test_allow_passes_with_header(sample_decision, payment):
 
 
 def test_non_allow_is_the_decision_with_its_status(sample_decision, payment):
-    client, _ = authority(sample_decision(decision="denied", reasons=["sanctions_hit"], http_status=451))
+    client, _ = authority(sample_decision(decision="denied", reasons=["sanctions_hit"], binding_hints={"http_status": 451}))
     res = app_with(client, payment).post("/checkout")
     assert res.status_code == 451 and res.json()["reasons"] == ["sanctions_hit"]
     assert HEADER_DECISION in res.headers
+    assert res.headers["cache-control"] == "no-store"
 
 
 def test_status_computed_when_missing(sample_decision, payment):
     d = sample_decision(decision="escalated", reasons=["above_review_threshold"], escalation={"kind": "human_stepup"})
-    d.pop("http_status")
+    d.pop("binding_hints")
     client, _ = authority(d)
     assert app_with(client, payment).post("/checkout").status_code == 428
 
 
-def test_fails_closed_when_unreachable(sample_decision, payment):
+def test_fails_closed_with_a_local_decision_when_unreachable(sample_decision, payment):
+    from x403.jws import generate_key, verify_local_decision
+
+    key = generate_key()
     client, _ = authority(httpx.ConnectError("refused"))
     seen = []
-    res = app_with(client, payment, on_decision=lambda d, r: seen.append(d)).post("/checkout")
-    assert res.status_code == 403
-    assert seen[0]["reasons"] == ["authority_timeout"] and seen[0]["authority"] is None
+    app = app_with(client, payment, executor={"id": "shop.example", "kid": key.kid}, private_jwk=key.private_jwk, on_decision=lambda d, r: seen.append(d))
+    res = app.post("/checkout")
+    assert res.status_code == 403 and res.headers["cache-control"] == "no-store"
+    local = seen[0]
+    assert local["local"] is True and local["decision"] == "denied" and local["reasons"] == ["authority_timeout"]
+    assert local["audience"] == "shop.example" and local["subject"]["amount"] == "189.00"
+    assert verify_local_decision(local, key.public_jwk, audience="shop.example", payment=payment).ok
+
+
+def test_never_allows_on_timeout(payment):
+    client, _ = authority(httpx.ConnectError("refused"))
+    seen = []
+    res = app_with(client, payment, on_timeout="escalated", on_decision=lambda d, r: seen.append(d)).post("/checkout")
+    assert res.status_code == 403 and seen[0]["decision"] == "escalated" and seen[0]["escalation"]["kind"] == "executor_review"
+
+
+def test_oversized_presentation_is_no_presentation(sample_decision, payment):
+    import json
+
+    client, sent = authority(sample_decision())
+    big = encode({"evidence": [{"type": "other", "ref": "sha256:" + "00" * 32, "inline": "x" * 9000}]})
+    res = app_with(client, payment).post("/checkout", headers={HEADER_PRESENTATION: big})
+    assert res.status_code == 200
+    assert json.loads(sent[0].content).get("evidence") is None
 
 
 def test_shadow_mode_always_passes(sample_decision, payment):
-    client, _ = authority(sample_decision(decision="denied", reasons=["blocked_counterparty"], http_status=403))
+    client, _ = authority(sample_decision(decision="denied", reasons=["blocked_counterparty"], binding_hints={"http_status": 403}))
     assert app_with(client, payment, mode="shadow").post("/checkout").status_code == 200
 
 
 def test_decision_response(sample_decision):
-    res = decision_response(sample_decision(decision="denied", reasons=["velocity_high"], http_status=429))
-    assert res.status_code == 429 and res.headers[HEADER_DECISION]
+    res = decision_response(sample_decision(decision="denied", reasons=["velocity_high"], binding_hints={"http_status": 429}))
+    assert res.status_code == 429 and res.headers[HEADER_DECISION] and res.headers["cache-control"] == "no-store"

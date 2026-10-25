@@ -14,7 +14,8 @@ export type EscalationKind = "agent_adjust" | "operator_confirm" | "human_stepup
 export type CheckKey = "identity" | "mandate" | "payee" | "behavior";
 export type CheckStatus = "pass" | "warn" | "fail" | "skip";
 export type HopStatus = "verified" | "asserted" | "absent";
-export type OnTimeout = "denied" | "escalated" | "allowed_flagged";
+/** Never an allow: a slow authority must not be a bypass. */
+export type OnTimeout = "denied" | "escalated";
 export type Rail =
   | "card"
   | "usdc"
@@ -50,10 +51,20 @@ export interface Payment {
   items?: Array<{ sku?: string; description?: string; class?: string; qty?: number; amount?: Amount }>;
   references?: {
     order_id?: string;
-    cart_hash?: Hash;
+    /** x403's own hash of the cart artifact. */
+    cart_ref?: Hash;
+    /** x403's own hash of the exact x402 PaymentRequirements or MPP challenge. */
+    payment_requirements_ref?: Hash;
+    /** The AP2 checkout_hash as AP2 made it, verbatim. */
+    ap2_checkout_hash?: string;
+    /** The Verifiable Intent transaction_id as issued, verbatim. */
+    vi_transaction_id?: string;
     po?: string;
-    payment_requirements_hash?: Hash;
     instruction_id?: string;
+    /** @deprecated earlier name of cart_ref */
+    cart_hash?: Hash;
+    /** @deprecated earlier name of payment_requirements_ref */
+    payment_requirements_hash?: Hash;
   };
   idempotency_key?: string;
 }
@@ -175,6 +186,29 @@ export type EscalationOption =
   | "human_stepup"
   | "wait";
 
+/** The one payment a decision is for. A verifier checks it before trusting an allow. */
+export interface Subject {
+  /** Hash of the payment object as presented. */
+  payment_ref: Hash;
+  amount: Amount;
+  currency: Currency;
+  executor_id: string;
+}
+
+/** Advisory: how the executor answers on the HTTP binding. Not part of the decision's meaning. */
+export interface BindingHints {
+  http_status?: HttpStatus;
+}
+
+export interface Escalation {
+  kind: EscalationKind;
+  options?: EscalationOption[];
+  reduce_to?: Amount;
+  url?: string;
+  retry_after?: number;
+  step_up_ref?: string;
+}
+
 export interface Decision {
   scheme: "x403";
   version: string;
@@ -182,9 +216,15 @@ export interface Decision {
   decision: DecisionWord;
   direction?: Direction;
   mode?: Mode;
+  /** The one payment this decision is for. Written by every authority since the binding rule; earlier decisions lack it. */
+  subject?: Subject;
+  /** The executor this decision is for. Presented anywhere else it is void. */
+  audience?: string;
+  /** Hash of the risk query as received. */
+  query_ref?: Hash;
   policy_id: string;
   policy_hash: Hash;
-  authority: KeyRef | null;
+  authority: KeyRef;
   verified?: { human?: string; operator?: string; agent?: string; instance?: string; session?: string };
   checks: Check[];
   reasons: string[];
@@ -196,22 +236,51 @@ export interface Decision {
     rails?: Rail[];
     expires_at?: Time;
   };
-  escalation?: {
-    kind: EscalationKind;
-    options?: EscalationOption[];
-    reduce_to?: Amount;
-    url?: string;
-    retry_after?: number;
-    step_up_ref?: string;
-  };
+  escalation?: Escalation;
   evidence_hashes: Hash[];
   disclosure?: { history?: "threshold" | "none"; claims?: Array<Record<string, number>> };
+  binding_hints?: BindingHints;
+  /** @deprecated written by earlier authorities; read binding_hints.http_status */
   http_status?: HttpStatus;
-  supersedes?: string | null;
-  latency_ms?: number;
+  /** The hash of the decision this one replaces. */
+  supersedes?: Hash | null;
   issued_at: Time;
   expires_at: Time;
   decision_sig?: JWS;
+}
+
+/**
+ * What an executor signs itself when the authority gave no decision inside the budget.
+ * Never an allow, never presented as the authority's; the authority stores it as a receipt.
+ */
+export interface LocalDecision {
+  scheme: "x403";
+  version: string;
+  id: string;
+  decision: "denied" | "escalated";
+  local: true;
+  direction?: Direction;
+  subject: Subject;
+  audience: string;
+  query_ref?: Hash;
+  policy_id: string;
+  policy_hash?: Hash;
+  /** The authority that did not answer. */
+  authority?: KeyRef;
+  reasons: string[];
+  escalation?: Pick<Escalation, "kind" | "options" | "retry_after">;
+  binding_hints?: BindingHints;
+  executor: KeyRef;
+  issued_at: Time;
+  expires_at: Time;
+  local_sig?: JWS;
+}
+
+/** What a gate hands its handler: the authority's decision, or the executor's own on timeout. */
+export type AnyDecision = Decision | LocalDecision;
+
+export function isLocal(decision: AnyDecision): decision is LocalDecision {
+  return (decision as LocalDecision).local === true;
 }
 
 export interface Receipt {
@@ -234,15 +303,24 @@ export type OutcomeWord =
   | "fraud_confirmed"
   | "false_positive";
 
+export type OutcomeCategory = "attack" | "accident" | "control_failure" | "commercial_dispute" | "none";
+export type ReportedVia = "executor" | "requester" | "issuer" | "network" | "facilitator" | "psp" | "authority";
+
 export interface Outcome {
   decision_ref: string;
+  /** The decision as signed, so the report cannot be moved to another decision with the same id. */
+  decision_hash?: Hash;
+  authority_id?: string;
   outcome: OutcomeWord;
+  category?: OutcomeCategory;
+  reported_via?: ReportedVia;
   at: Time;
   amount?: Amount;
   currency?: Currency;
   reason_code?: string;
   note?: string;
   reporter: KeyRef;
+  /** Required on the wire: an authority accepts reports only from parties it can verify. */
   sig?: JWS;
 }
 
@@ -256,6 +334,8 @@ export interface Policy {
   required_hops: Array<"human" | "operator" | "agent" | "instance">;
   accepted_evidence?: string[];
   accepted_mandates?: string[];
+  /** Who may post outcomes besides the executor, the requester and the authority. */
+  reporters?: KeyRef[];
   step_up?: { human_above?: Amount; operator_above?: Amount };
   caps?: { max_amount?: Amount; currency?: Currency };
   rails?: Rail[];

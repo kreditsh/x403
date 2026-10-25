@@ -15,6 +15,18 @@ def test_auth_scheme_challenge():
     assert parse_www_authenticate("Bearer realm=x") is None
 
 
+def test_refuses_a_header_value_over_8kb():
+    import pytest
+
+    from x403.headers import MAX_HEADER_BYTES
+
+    big = encode({"inline": "x" * 9000})
+    assert len(big) > MAX_HEADER_BYTES
+    with pytest.raises(ValueError):
+        decode(big)
+    assert parse_authorization_risk(f"Risk {big}") is None
+
+
 def test_authorization_risk():
     presentation = {"decision_ref": "k_1"}
     assert parse_authorization_risk(authorization_risk(presentation)) == presentation

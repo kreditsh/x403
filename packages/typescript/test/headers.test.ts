@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { authorizationRisk, decode, encode, parseAuthorizationRisk, parseWwwAuthenticate, wwwAuthenticate } from "../src/headers.js";
+import { MAX_HEADER_BYTES, authorizationRisk, decode, encode, parseAuthorizationRisk, parseWwwAuthenticate, wwwAuthenticate } from "../src/headers.js";
 
 describe("headers", () => {
   it("roundtrips base64url JSON without padding", () => {
@@ -14,6 +14,13 @@ describe("headers", () => {
     expect(header).toBe('Risk policy="shop-v1", realm="checkout", request="abc_-", expires="2026-10-20T10:00:00Z"');
     expect(parseWwwAuthenticate(header)).toEqual({ policy: "shop-v1", realm: "checkout", request: "abc_-", expires: "2026-10-20T10:00:00Z" });
     expect(parseWwwAuthenticate("Bearer realm=x")).toBeNull();
+  });
+
+  it("refuses a header value over 8 KB", () => {
+    const big = encode({ inline: "x".repeat(9000) });
+    expect(big.length).toBeGreaterThan(MAX_HEADER_BYTES);
+    expect(() => decode(big)).toThrow(RangeError);
+    expect(parseAuthorizationRisk(`Risk ${big}`)).toBeNull();
   });
 
   it("writes and parses Authorization: Risk", () => {

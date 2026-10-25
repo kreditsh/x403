@@ -2,8 +2,8 @@
 // Node, in a Worker and in a browser. Signatures are raw r||s, which is what JWS wants and
 // what WebCrypto produces, so nothing is re-encoded.
 
-import { canonicalize, hex, sha256, utf8 } from "./jcs.js";
-import type { Decision, Hash, JWK, JWKS, Outcome, Receipt, RiskQuery } from "./types.js";
+import { canonicalize, hash, hex, sha256, utf8 } from "./jcs.js";
+import type { Decision, Hash, JWK, JWKS, LocalDecision, Outcome, Payment, Receipt, RiskQuery, Subject } from "./types.js";
 
 const ALG = { name: "ECDSA", namedCurve: "P-256" } as const;
 const SIGN = { name: "ECDSA", hash: "SHA-256" } as const;
@@ -112,11 +112,46 @@ export interface VerifyResult {
   kid?: string;
 }
 
+/** What a verifier knows about where and for what a decision is being presented. */
+export interface VerifyOptions {
+  now?: Date;
+  /** The executor's own id: a decision whose audience is another executor is void here. */
+  audience?: string;
+  /** The payment about to be executed: a decision issued for another payment is void for it. */
+  payment?: Payment;
+}
+
+/** The hash a decision's subject carries: the payment object as presented. */
+export async function paymentHash(payment: Payment): Promise<Hash> {
+  return hash(payment);
+}
+
+/** The subject a decision for `payment` must carry. */
+export async function subjectOf(payment: Payment): Promise<Subject> {
+  return { payment_ref: await paymentHash(payment), amount: payment.amount, currency: payment.currency, executor_id: payment.executor.id };
+}
+
+async function checkBinding(decision: { subject?: Subject; audience?: string }, options: VerifyOptions, kid?: string): Promise<VerifyResult | null> {
+  if (options.audience !== undefined && decision.audience !== options.audience) return { ok: false, reason: "audience_mismatch", kid };
+  if (options.payment) {
+    const want = await subjectOf(options.payment);
+    const got = decision.subject;
+    if (!got || got.payment_ref !== want.payment_ref || got.amount !== want.amount || got.currency !== want.currency || got.executor_id !== want.executor_id) {
+      return { ok: false, reason: "subject_mismatch", kid };
+    }
+  }
+  return null;
+}
+
 /**
  * A decision verifies when its decision_sig is a valid ES256 signature by one of the
- * authority's keys over the object without decision_sig, and it has not expired.
+ * authority's keys over the object without decision_sig, it has not expired, and, when the
+ * verifier says where it is being presented, its audience and subject are this executor and
+ * this payment.
  */
-export async function verifyDecision(decision: Decision, jwks: JWKS | JWK, now: Date = new Date()): Promise<VerifyResult> {
+export async function verifyDecision(decision: Decision, jwks: JWKS | JWK, options: Date | VerifyOptions = {}): Promise<VerifyResult> {
+  const opts: VerifyOptions = options instanceof Date ? { now: options } : options;
+  const now = opts.now ?? new Date();
   if (!decision.decision_sig) return { ok: false, reason: "unsigned" };
   const { decision_sig, ...body } = decision;
   let verified: Verified;
@@ -131,6 +166,33 @@ export async function verifyDecision(decision: Decision, jwks: JWKS | JWK, now: 
   if (decision.expires_at && new Date(decision.expires_at).getTime() <= now.getTime()) {
     return { ok: false, reason: "decision_expired", kid: verified.header.kid };
   }
+  const bound = await checkBinding(decision, opts, verified.header.kid);
+  if (bound) return bound;
+  return { ok: true, kid: verified.header.kid };
+}
+
+/** Sign a local decision: local_sig is by the executor over the object without local_sig. */
+export async function signLocalDecision(local: Omit<LocalDecision, "local_sig">, privateJwk: JWK, kid?: string): Promise<LocalDecision> {
+  const { local_sig: _drop, ...body } = local as LocalDecision;
+  const local_sig = await sign(body, privateJwk, { kid: kid ?? local.executor.kid, typ: "x403-local+jws" });
+  return { ...body, local_sig };
+}
+
+/** A local decision verifies against the executor's keys, never an authority's, and is never an allow. */
+export async function verifyLocalDecision(local: LocalDecision, jwks: JWKS | JWK, options: VerifyOptions = {}): Promise<VerifyResult> {
+  if (local.local !== true) return { ok: false, reason: "not a local decision" };
+  if (local.decision === ("allowed" as string)) return { ok: false, reason: "a local decision is never an allow" };
+  if (!local.local_sig) return { ok: false, reason: "unsigned" };
+  const { local_sig, ...body } = local;
+  let verified: Verified;
+  try {
+    verified = await verify(local_sig, jwks);
+  } catch (e) {
+    return { ok: false, reason: e instanceof Error ? e.message : String(e) };
+  }
+  if (verified.payloadText !== canonicalize(body)) return { ok: false, reason: "object differs from signed payload", kid: verified.header.kid };
+  const bound = await checkBinding(local, options, verified.header.kid);
+  if (bound) return bound;
   return { ok: true, kid: verified.header.kid };
 }
 
