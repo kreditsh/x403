@@ -4,7 +4,7 @@
   "title": "x403 Decision",
   "description": "What the authority signs. A word, reasons, four checks, what would change it, and the one payment and one executor it is for. No risk, trust or confidence number, no layer detail.",
   "type": "object",
-  "required": ["scheme", "version", "id", "decision", "subject", "audience", "policy_id", "policy_hash", "authority", "checks", "reasons", "evidence_hashes", "issued_at", "expires_at"],
+  "required": ["scheme", "version", "id", "decision", "subject", "audience", "query_ref", "policy_id", "policy_hash", "authority", "checks", "reasons", "evidence_hashes", "issued_at", "expires_at"],
   "properties": {
     "scheme": { "const": "x403" },
     "version": { "type": "string" },

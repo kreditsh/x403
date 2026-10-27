@@ -4,7 +4,7 @@
   "title": "x403 Outcome report",
   "description": "What happened after the money moved. Only the executor named in the receipt, the requester, the authority, or a reporter registered in the executor's policy may report, and the report is signed.",
   "type": "object",
-  "required": ["decision_ref", "outcome", "at", "reporter", "sig"],
+  "required": ["decision_ref", "decision_hash", "outcome", "at", "reporter", "sig"],
   "properties": {
     "decision_ref": { "type": "string" },
     "decision_hash": { "$ref": "_defs.json#/$defs/hash", "description": "the decision as signed, so the report cannot be moved to another decision with the same id" },
