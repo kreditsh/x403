@@ -291,6 +291,8 @@ export interface Receipt {
   execution?: { rail?: Rail; ref?: string; amount?: Amount; currency?: Currency };
   executor: KeyRef;
   executor_sig?: JWS;
+  /** A local decision the executor made on timeout, filed with the authority as this receipt. */
+  local_decision?: LocalDecision;
 }
 
 export type OutcomeWord =

@@ -28,7 +28,7 @@ const decision = await x403.decide({
 });
 
 if (decision.decision === "allowed") charge(decision.constraints);
-else respond(decision.http_status, { "X403-Decision": X403.encode(decision) });
+else respond(decision.binding_hints.http_status, { "X403-Decision": X403.encode(decision) });
 ```
 
 ```python
@@ -41,7 +41,7 @@ assert x403.verify(decision)  # offline, against the authority's published key
 
 ## Status codes
 
-Six are normative for clients. The decision carries `http_status`, so no client computes the mapping itself.
+Six are normative for clients. The decision carries `binding_hints.http_status`, so no client computes the mapping itself.
 
 | Decision | Status |
 | --- | --- |
@@ -59,7 +59,7 @@ The full table, with 400, 404 and 409, is in the spec, section 6.3.
 
 ```
 spec/        the protocol document
-schemas/     JSON Schemas for query, decision, receipt, outcome, policy, authority
+schemas/     JSON Schemas, one per object: query, payment, actor, intent, evidence, decision, local_decision, receipt, outcome, policy, authority, and _defs they share
 registry/    reason codes: group, check, status, default effect
 packages/    @kredit/x403 (TypeScript) and x403 (Python): objects, canonical JSON, signing, verifying, middleware
 examples/    an Express checkout, a Cloudflare Worker, a FastAPI merchant, a wallet that preflights

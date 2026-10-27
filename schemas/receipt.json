@@ -20,6 +20,7 @@
       }
     },
     "executor": { "$ref": "_defs.json#/$defs/key_ref" },
-    "executor_sig": { "$ref": "_defs.json#/$defs/jws", "description": "JWS by the executor over the object without this field" }
+    "executor_sig": { "$ref": "_defs.json#/$defs/jws", "description": "JWS by the executor over the object without this field" },
+    "local_decision": { "$ref": "local_decision.json", "description": "the executor's own signed decision on timeout (section 4.6), filed with the authority as this receipt; decision_ref is then its id and no decision of the authority's stands behind it" }
   }
 }
