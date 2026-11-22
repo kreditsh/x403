@@ -23,6 +23,10 @@
   "codes": {
     "human_unverified": { "group": "identity", "effect": "escalated", "escalation": "human_stepup", "says": "no verified human behind the chain" },
     "human_assurance_below_policy": { "group": "identity", "effect": "escalated", "escalation": "human_stepup", "says": "the human was verified below the level the policy asks for" },
+    "human_unique": { "group": "identity", "effect": "note", "says": "the human is proven unique by an issuer the policy accepts" },
+    "human_proof_replayed": { "group": "identity", "effect": "denied", "says": "the proof of a human was already used" },
+    "human_presence_required": { "group": "identity", "effect": "escalated", "escalation": "human_stepup", "says": "the policy asks for a fresh presence check from the human" },
+    "human_fleet_exceeded": { "group": "identity", "effect": "denied", "says": "one human stands behind more agents than the policy allows" },
     "operator_unverified": { "group": "identity", "effect": "escalated", "escalation": "operator_confirm", "says": "the operator has no KYB on record" },
     "operator_pending": { "group": "identity", "effect": "note", "says": "operator verification is in progress" },
     "agent_unregistered": { "group": "identity", "effect": "escalated", "escalation": "operator_confirm", "says": "the agent is in no registry the policy accepts" },

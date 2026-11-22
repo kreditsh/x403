@@ -139,6 +139,7 @@ export type EvidenceType =
   | "circle.screening"
   | "vgs.alias"
   | "fraud.vendor"
+  | "worldid.proof"
   | "other";
 
 export interface Evidence {

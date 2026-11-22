@@ -13,7 +13,7 @@
         "ap2.intent_mandate", "ap2.cart_mandate", "ap2.payment_mandate",
         "verifiable-intent.chain", "amex.proof_of_intent", "visa.vic_instruction", "visa.tap_signature", "mastercard.wba_signature",
         "skyfire.kya", "skyfire.pay", "kite.passport", "stripe.shared_payment_token", "mpp.challenge", "x402.payment_requirements",
-        "erc-8004.registration", "kredit.passport", "kredit.agent_token", "circle.screening", "vgs.alias", "fraud.vendor", "other"
+        "erc-8004.registration", "kredit.passport", "kredit.agent_token", "circle.screening", "vgs.alias", "fraud.vendor", "worldid.proof", "other"
       ]
     },
     "issuer": { "type": "string" },

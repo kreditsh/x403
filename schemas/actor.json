@@ -10,7 +10,7 @@
       "required": ["status"],
       "properties": {
         "status": { "$ref": "_defs.json#/$defs/hop_status" },
-        "basis": { "type": "string", "description": "x401, kyb, kya, registry, token, passport, kredit" },
+        "basis": { "type": "string", "description": "x401, worldid, kyb, kya, registry, token, passport, kredit" },
         "id": { "type": "string" },
         "via": { "type": "string" },
         "ref": { "$ref": "_defs.json#/$defs/hash" }

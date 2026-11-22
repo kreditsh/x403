@@ -2,6 +2,13 @@
 
 Package releases of `@kredit/x403` (npm) and `x403` (PyPI). The protocol version is the `version` field of every object and is listed with each release; it changes only when an object changes.
 
+## Unreleased, protocol 0.2
+
+No object changes, so the protocol stays 0.2.
+
+- **Evidence.** `worldid.proof`: a World ID proof of a real, unique human, on the `human` hop with basis `worldid`. Verified with the issuer's verify API, or by hash when the authority verified it itself. Spec section 9, `schemas/evidence.json`, `EvidenceType`.
+- **Registry.** `human_unique` (note), `human_proof_replayed` (denied), `human_presence_required` (escalated, `human_stepup`), `human_fleet_exceeded` (denied).
+
 ## 0.3.0 (tag `v0.3.0`, 2026-10-26), protocol 0.2
 
 The objects changed, so the protocol is 0.2. Authorities still answer 0.1 queries; 0.1 decisions still verify.
