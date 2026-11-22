@@ -23,7 +23,7 @@ export function sampleDecision(overrides: Partial<Decision> = {}): Decision {
   const now = Date.now();
   return {
     scheme: "x403",
-    version: "0.2",
+    version: "0.3",
     id: "k_test",
     decision: "allowed",
     direction: "inbound",
@@ -106,7 +106,7 @@ describe("ES256 JWS", () => {
     const key = await generateKey();
     const base: Omit<LocalDecision, "local_sig"> = {
       scheme: "x403",
-      version: "0.2",
+      version: "0.3",
       id: "local_1",
       decision: "denied",
       local: true,
@@ -145,7 +145,7 @@ describe("ES256 JWS", () => {
     expect((o.payload as { category: string }).category).toBe("none");
 
     const query = await signQuery(
-      { scheme: "x403", version: "0.2", direction: "inbound", payment: samplePayment, requester: { id: "did:web:shop.example" } },
+      { scheme: "x403", version: "0.3", direction: "inbound", payment: samplePayment, requester: { id: "did:web:shop.example" } },
       key.privateJwk,
     );
     expect((await verify(query.requester_sig!, key.publicJwk)).payload).toMatchObject({ direction: "inbound" });

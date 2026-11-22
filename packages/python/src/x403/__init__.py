@@ -39,7 +39,7 @@ from .jws import (
 from .registry import CODES, GROUPS, NORMATIVE_STATUSES, REGISTRY, check_of, effect_of, entry_of, escalation_of, group_of, status_for
 from .types import VERSION, is_local
 
-__version__ = "0.3.0"
+__version__ = "0.4.0"
 
 __all__ = [
     "AsyncX403", "X403", "X403Error", "build_query",

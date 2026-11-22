@@ -71,6 +71,7 @@ Two numbers, on purpose. The **protocol version** is the `version` field of ever
 
 | Package release | Git tag | Protocol it speaks | What changed in the packages |
 | --- | --- | --- | --- |
+| 0.4.0 | `v0.4.0` | 0.3 | World ID as evidence: `worldid.proof`, a proof of a real, unique human, on the `human` hop with basis `worldid`. Reason codes `human_unique`, `human_proof_replayed`, `human_presence_required`, `human_fleet_exceeded`. Nothing removed; 0.1 and 0.2 queries are still answered and their decisions still verify. |
 | 0.3.0 | `v0.3.0` | 0.2 | Decisions bound to one payment (`subject`) and one executor (`audience`); verifiers check both. Executor-signed local decisions on timeout, never an allow. Signed outcomes from authorized reporters only, with `decision_hash`, `category`, `reported_via`. `binding_hints` instead of `http_status`, no `latency_ms`. Foreign hashes carried verbatim. `Cache-Control: no-store`, 8 KB header limit. Test vectors, governance files, security considerations. |
 | 0.2.2 (PyPI only) | `v0.2.2` | 0.1 | Decisions are states: `allowed`, `escalated`, `denied`; registry effects and `on_timeout` use the same words. Changelog and this table. The npm package did not change and stayed at 0.2.0. |
 | 0.2.1 (PyPI only) | | 0.1 | Wrote `0.2` in the `version` field by mistake; use 0.2.2. |
