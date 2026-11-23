@@ -23,7 +23,7 @@ OutcomeWord = Literal[
 OutcomeCategory = Literal["attack", "accident", "control_failure", "commercial_dispute", "none"]
 ReportedVia = Literal["executor", "requester", "issuer", "network", "facilitator", "psp", "authority"]
 
-VERSION = "0.3"
+VERSION = "0.4"
 
 
 class KeyRef(TypedDict, total=False):

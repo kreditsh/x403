@@ -2,6 +2,15 @@
 
 Package releases of `@kredit/x403` (npm) and `x403` (PyPI). The protocol version is the `version` field of every object and is listed with each release; it changes only when an object changes.
 
+## 0.5.0 (tag `v0.5.0`, 2026-11-22), protocol 0.4
+
+The evidence item gained three types, so the protocol is 0.4. Nothing was removed or renamed. Authorities still answer 0.1, 0.2 and 0.3 queries; their decisions still verify.
+
+- **Version.** Every object writes `"version": "0.4"`; `VERSION` in both packages; `schemas/query.json` accepts 0.1 to 0.4.
+- **Evidence.** `cloudflare.edge`: what the executor's own edge saw of the request (network, connection, edge location, bot signals), recorded as `asserted` on the `session` hop. `web-bot-auth.signature` and `x402.payment_payload`, which the reference authority already verified, are now in the schema, the spec and `EvidenceType`.
+- **Spec.** Appendix B, three applications: agentic commerce for merchants, agentic payments for financial institutions, and stablecoin, each with the evidence it carries.
+- **Test vectors** regenerated from the fixed keys.
+
 ## 0.4.0 (tag `v0.4.0`, 2026-11-22), protocol 0.3
 
 The evidence item gained a type and the human hop a basis, so the protocol is 0.3. Nothing was removed or renamed. Authorities still answer 0.1 and 0.2 queries; 0.1 and 0.2 decisions still verify.
